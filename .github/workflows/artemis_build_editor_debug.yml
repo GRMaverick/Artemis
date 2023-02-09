@@ -9,8 +9,9 @@ jobs:
     #  matrix:
     #    configuration: [Debug, Release]   
     env:
-      SolutionName: Artemis.sln
+      SolutionName: Artemis\Artemis.sln
       Configuration: Debug
+
     runs-on: windows-latest
     steps:
     - name: Fetch Latest
