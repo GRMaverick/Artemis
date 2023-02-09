@@ -1,5 +1,5 @@
-name: [Release]: Artemis Editor
-run-name: Artemis Editor Build - [${{ github.actor }}]
+name: "[Release]: Artemis Editor"
+run-name: Artemis Editor Build - ${{ github.actor }}
 on:
   push:
     branches: ["main"]
