@@ -1,13 +1,13 @@
-name: [Debug]: Artemis Editor
+name: [Release]: Artemis Editor
 run-name: Artemis Editor Build - [${{ github.actor }}]
 on:
   push:
     branches: ["main"]
 jobs:
-  build:
+  build: 
     env:
       SolutionName: Artemis\Artemis.sln
-      Configuration: Debug
+      Configuration: Release
       Cores: 20
 
     runs-on: windows-latest
