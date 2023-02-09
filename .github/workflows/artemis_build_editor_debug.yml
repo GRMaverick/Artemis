@@ -28,4 +28,4 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
       
     - name: Run MSBuild.exe
-      run: msbuild $env:SolutionName /t:Restore /p:Configuration=$env:Configuration
+      run: msbuild $env:SolutionName /t:Restore;Build /p:Configuration=$env:Configuration
