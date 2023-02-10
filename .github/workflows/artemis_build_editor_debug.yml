@@ -15,7 +15,7 @@ jobs:
     - name: Set-up .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: $env.dotnet_version
+        dotnet-version: $env:dotnet_version
     - uses: actions/cache@v2
       with:
         path: ~/.nuget/packages
@@ -39,7 +39,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: $env.dotnet_version
+        dotnet-version: $env:dotnet_version
     
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
