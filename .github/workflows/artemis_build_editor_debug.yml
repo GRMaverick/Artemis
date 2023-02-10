@@ -5,22 +5,19 @@ on:
   push:
     branches: ["main"]
     
-jobs:
-  Cache-Dependencies:
-    #env:
-    runs-on: windows-latest
-    steps:
-    - name: Set-up .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - uses: actions/cache@v2
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget
-    
+jobs:       
+#    - name: Cache Nuget Dependencies
+#      id: cache-nuget
+#      uses: actions/cache@v3
+#      with:
+#        path: ~/.nuget/packages
+#        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+#        restore-keys: |
+#          ${{ runner.os }}-nuget
+#          
+#    - name: Install dependencies
+#      run: dotnet add package Newtonsoft.Json --version 12.0.1
+      
   Build-Solution:
     env:
       SolutionName: Artemis\Artemis.sln
@@ -34,7 +31,16 @@ jobs:
       with:
         fetch-depth: 0
     
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: '.\.dotnet'
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7
+        
     - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
