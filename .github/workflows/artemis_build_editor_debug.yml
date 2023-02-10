@@ -35,7 +35,7 @@ jobs:
       id: cache-dotnet
       uses: actions/cache@v3
       with:
-        path: '.\.dotnet'
+        path: "C:\\Program Files\\dotnet"
         key: ${{ runner.os }}-dotnet-7
         restore-keys: ${{ runner.os }}-dotnet-7
         
