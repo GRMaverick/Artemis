@@ -1,10 +1,30 @@
 name: "[Debug]: Artemis Editor"
-run-name: Artemis Editor Build - ${{ github.actor }}
+run-name: Debug - Artemis Editor - ${{ github.actor }}
+env:
+  dotnet_version: 7.0.x
+  
 on:
   push:
     branches: ["main"]
+    
 jobs:
-  build:
+  Cache-Dependencies:
+    #env:
+    runs-on: windows-latest
+    steps:
+    - name: Set-up .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: $env.dotnet_version
+    - uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
+    - name: Install Dependencies
+    
+  Build-Solution:
     env:
       SolutionName: Artemis\Artemis.sln
       Configuration: Debug
@@ -20,7 +40,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: $env.dotnet_version
     
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
