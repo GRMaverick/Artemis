@@ -16,7 +16,7 @@
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.artemis.editor</ApplicationId>
-		<ApplicationIdGuid>70aee94c-5bab-4b3c-bbed-83f5366419e1</ApplicationIdGuid>
+		<ApplicationIdGuid>b7b7b9b1-3f83-42c7-85ea-7ed09d99722f</ApplicationIdGuid>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -49,7 +49,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="4.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Core" Version="4.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Artemis.Editor.AssetBrowser\Artemis.Editor.AssetBrowser.csproj" />
+	  <ProjectReference Include="..\Artemis.Editor.Settings\Artemis.Editor.Settings.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="AppSettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
