@@ -17,14 +17,4 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="CommunityToolkit.Maui" Version="4.0.0" />
-	  <PackageReference Include="CommunityToolkit.Maui.Core" Version="4.0.0" />
-	  <PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\Artemis.Editor.AssetBrowser\Artemis.Editor.AssetBrowser.csproj" />
-	</ItemGroup>
-
 </Project>
