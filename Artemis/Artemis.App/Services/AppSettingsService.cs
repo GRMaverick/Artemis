@@ -1,6 +1,6 @@
 ﻿namespace Artemis.App.Services
 {
-    using Artemis.Editor.Settings;
+    using Artemis.Editor.Interfaces;
 
     internal class AppSettingsService : ISettingsService
     {

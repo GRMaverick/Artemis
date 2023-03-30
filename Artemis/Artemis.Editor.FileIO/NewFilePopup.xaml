@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:Toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:Resources="clr-namespace:Artemis.Editor.Controls.Resources.Styles;assembly=Artemis.Editor.Controls"
+               x:Class="Artemis.Editor.FileIO.NewFilePopup"
+               CanBeDismissedByTappingOutsideOfPopup="False"
+               Size="600, 250">
+
+    <VerticalStackLayout BackgroundColor="{StaticResource Gray51}"
+                         HorizontalOptions="Center"
+                         VerticalOptions="CenterAndExpand"
+                         Margin="8,8,8,8" >
+        <VerticalStackLayout.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <Resources:Colours />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </VerticalStackLayout.Resources>
+        
+        <Grid HorizontalOptions="FillAndExpand" BackgroundColor="{StaticResource Gray950}">
+            <Label Text="New File..."
+                   Margin="8,8,8,8"
+                   HorizontalOptions="Start"
+                   TextColor="{StaticResource Gray100}" />
+        </Grid>
+
+        <VerticalStackLayout VerticalOptions="FillAndExpand">
+            <Grid Margin="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Folder Location -->
+                <Label Grid.Row="0" Grid.Column="0" Text="Location: " HorizontalOptions="Start" VerticalOptions="Center"  />
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding DestinationViewViewModel.SelectedLocation}" HorizontalOptions="StartAndExpand" VerticalOptions="Center" Margin="4"/>
+                <Button Grid.Row="0" Grid.Column="2" Text="Select" Clicked="SelectedClicked" HorizontalOptions="Center" VerticalOptions="Center" Margin="4"/>
+    
+                <!-- Filename Entry -->
+                <Label Grid.Row="1" Grid.Column="0" Text="Filename: " HorizontalOptions="Start" VerticalOptions="Center"  />
+                <Entry Grid.Row="1" Grid.Column="1" Placeholder="..." Margin="4" x:Name="FilenameEntry"/>
+                <Label Grid.Row="1" Grid.Column="2" Text="{Binding DestinationViewViewModel.FiletypeAsString}" HorizontalOptions="Center" VerticalOptions="Center" Margin="4"/>
+            </Grid>
+            
+            <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="End">
+                <Button Text="Create" Margin="4" Clicked="CreateClicked"/>
+                <Button Text="Cancel" Margin="4" Clicked="CancelClicked"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+        
+    </VerticalStackLayout>
+</Toolkit:Popup>

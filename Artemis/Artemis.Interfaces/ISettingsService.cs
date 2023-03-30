@@ -1,5 +1,5 @@
-﻿namespace Artemis.Editor.Settings 
-    {
+﻿namespace Artemis.Editor.Interfaces
+{
     // All the code in this file is included in all platforms.
     public interface ISettingsService 
     {

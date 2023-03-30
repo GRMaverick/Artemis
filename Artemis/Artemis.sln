@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor.Settings", "Artemis.Editor.Settings\Artemis.Editor.Settings.csproj", "{7019B7A3-B152-4335-AD81-9AEEA02B9FE6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor.AssetBrowser", "Artemis.Editor.AssetBrowser\Artemis.Editor.AssetBrowser.csproj", "{BB3CFC17-6E2B-41FB-B752-F6D69E322C3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor.Project", "Artemis.Editor.Project\Artemis.Editor.Project.csproj", "{E73274CF-8D25-4888-9DED-960C75C3339B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.App", "Artemis.App\Artemis.App.csproj", "{82E4336B-D692-417C-AEAD-D5BAC0D8B1E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Editor", "Artemis.Editor\Artemis.Editor.csproj", "{C14F93D8-1F13-4C42-9DFB-8C9864E904D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor", "Artemis.Editor\Artemis.Editor.csproj", "{C14F93D8-1F13-4C42-9DFB-8C9864E904D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor.FileIO", "Artemis.Editor.FileIO\Artemis.Editor.FileIO.csproj", "{FA3C9AFA-BAC5-46AD-81EE-16F1E64D26F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor.Controls", "Artemis.Editor.Controls\Artemis.Editor.Controls.csproj", "{DD495E32-07E8-4934-A90D-E7E62EAE9548}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Editor.Interfaces", "Artemis.Interfaces\Artemis.Editor.Interfaces.csproj", "{93F1C638-BE07-48B9-8A0B-8F0EFDFA7EAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7019B7A3-B152-4335-AD81-9AEEA02B9FE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7019B7A3-B152-4335-AD81-9AEEA02B9FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7019B7A3-B152-4335-AD81-9AEEA02B9FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7019B7A3-B152-4335-AD81-9AEEA02B9FE6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BB3CFC17-6E2B-41FB-B752-F6D69E322C3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BB3CFC17-6E2B-41FB-B752-F6D69E322C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB3CFC17-6E2B-41FB-B752-F6D69E322C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,6 +41,18 @@ Global
 		{C14F93D8-1F13-4C42-9DFB-8C9864E904D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C14F93D8-1F13-4C42-9DFB-8C9864E904D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C14F93D8-1F13-4C42-9DFB-8C9864E904D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA3C9AFA-BAC5-46AD-81EE-16F1E64D26F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA3C9AFA-BAC5-46AD-81EE-16F1E64D26F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA3C9AFA-BAC5-46AD-81EE-16F1E64D26F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA3C9AFA-BAC5-46AD-81EE-16F1E64D26F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD495E32-07E8-4934-A90D-E7E62EAE9548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD495E32-07E8-4934-A90D-E7E62EAE9548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD495E32-07E8-4934-A90D-E7E62EAE9548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD495E32-07E8-4934-A90D-E7E62EAE9548}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93F1C638-BE07-48B9-8A0B-8F0EFDFA7EAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93F1C638-BE07-48B9-8A0B-8F0EFDFA7EAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93F1C638-BE07-48B9-8A0B-8F0EFDFA7EAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93F1C638-BE07-48B9-8A0B-8F0EFDFA7EAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

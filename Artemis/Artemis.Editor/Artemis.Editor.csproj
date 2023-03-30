@@ -25,6 +25,8 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Artemis.Editor.AssetBrowser\Artemis.Editor.AssetBrowser.csproj" />
+	  <ProjectReference Include="..\Artemis.Editor.Controls\Artemis.Editor.Controls.csproj" />
+	  <ProjectReference Include="..\Artemis.Editor.FileIO\Artemis.Editor.FileIO.csproj" />
 	</ItemGroup>
 
 </Project>

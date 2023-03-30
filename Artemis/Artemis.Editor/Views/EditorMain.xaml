@@ -3,41 +3,51 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Layouts;assembly=CommunityToolkit.Maui"
              xmlns:asset="clr-namespace:Artemis.Editor.AssetBrowser.Views;assembly=Artemis.Editor.AssetBrowser"
+             xmlns:Controls="clr-namespace:Artemis.Editor.Controls.Resources.Styles;assembly=Artemis.Editor.Controls"
              x:Class="Artemis.Editor.Views.EditorMainPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <Controls:Colours />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <ContentPage.MenuBarItems>
         <MenuBarItem Text="File">
-            <MenuFlyoutItem Text="New" />
-            <MenuFlyoutItem Text="Open" />
-            <MenuFlyoutItem Text="Save"/>
-            <MenuFlyoutItem Text="Save As" />
-            <MenuFlyoutItem Text="Export" />
+            <MenuFlyoutSubItem Text="New">
+                <MenuFlyoutItem Text="Project" Command="{Binding NewAssetCommand}" CommandParameter="Project" />
+                <MenuFlyoutItem Text="Shader" Command="{Binding NewAssetCommand}" CommandParameter="Shader" />
+            </MenuFlyoutSubItem>
+            <MenuFlyoutItem Text="Open" Command="{Binding OpenAssetCommand}"/>
+            <MenuFlyoutItem Text="Save"     />
+            <MenuFlyoutItem Text="Save As"  />
+            <MenuFlyoutItem Text="Export"   />
         </MenuBarItem>
         <MenuBarItem Text="Edit">
-            <MenuFlyoutItem Text="Options" />
-            <MenuFlyoutItem Text="Preferences" />
+            <MenuFlyoutItem Text="Options"      />
+            <MenuFlyoutItem Text="Preferences"  />
         </MenuBarItem>
         <MenuBarItem Text="Help" />
         <MenuBarItem Text="About" />
     </ContentPage.MenuBarItems>
 
-    <toolkit:DockLayout Padding="10,10,10,10"
-                        HorizontalSpacing="10" 
-                        VerticalSpacing="10"
-                        ShouldExpandLastChild="True">
-        <asset:AssetListView toolkit:DockLayout.DockPosition="Left" 
-                             BindingContext="{Binding AssetItemViewModel}"/>
+    <toolkit:DockLayout ShouldExpandLastChild="True">
+        <asset:AssetListView toolkit:DockLayout.DockPosition="Left"
+                             Margin="8,8,4,8"
+                             BindingContext="{Binding ViewModel.AssetItemViewModel}" />
 
-        <Grid toolkit:DockLayout.DockPosition="Right" Background="DarkRed">
-            <Label Text="Property Window" />
+        <Grid toolkit:DockLayout.DockPosition="Right" Background="{StaticResource Color_ArtemisTertiary}" Margin="4,8,8,8">
+            <Label Text="Property Window" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="8,8,8,8"/>
         </Grid>
-        <Grid toolkit:DockLayout.DockPosition="Top" Background="DarkRed">
-            <Label Text="Ribbon" />
+        <Grid toolkit:DockLayout.DockPosition="Top" Background="{StaticResource Color_ArtemisTertiary}" Margin="4,8,4,4">
+            <Label Text="Ribbon" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="8,8,8,8"/>
         </Grid>
-        <Grid toolkit:DockLayout.DockPosition="Bottom" Background="DarkRed">
-            <Label Text="Status Window" />
+        <Grid toolkit:DockLayout.DockPosition="Bottom" Background="{StaticResource Color_ArtemisTertiary}" Margin="4,4,4,8">
+            <Label Text="Status Window" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="8,8,8,8"/>
         </Grid>
-        <Grid toolkit:DockLayout.DockPosition="None" Background="DarkRed">
-            <Label Text="Property Doc Viewer Window" />
+        <Grid toolkit:DockLayout.DockPosition="None" Background="{StaticResource Color_ArtemisTertiary}" Margin="4,4,4,4">
+            <Label Text="Property Doc Viewer Window" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="8,8,8,8"/>
         </Grid>
     </toolkit:DockLayout>
 

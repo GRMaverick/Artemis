@@ -7,11 +7,12 @@ using Newtonsoft.Json;
 
 using Artemis.App.Services;
 using Artemis.Editor;
+using Artemis.Editor.Interfaces;
 using Artemis.Editor.AssetBrowser.Views;
 using Artemis.Editor.AssetBrowser.ViewModels;
-using Artemis.Editor.Settings;
 using Artemis.Editor.Views;
 using Artemis.Editor.ViewModels;
+using Artemis.Editor.Project;
 
 namespace Artemis.App;
 
@@ -44,7 +45,7 @@ public static class MauiProgram
     public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder appBuilder)
     {
         _ = appBuilder.Services
-            //.AddSingleton<>
+            .AddSingleton<IProjectSettings, ProjectSettings>()
             .AddSingleton<ISettingsService, AppSettingsService>(sp => {
                 string strExeFilePath = System.AppContext.BaseDirectory;
                 string strWorkPath = Path.GetDirectoryName(strExeFilePath);

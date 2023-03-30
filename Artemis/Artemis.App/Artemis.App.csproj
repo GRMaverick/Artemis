@@ -59,8 +59,8 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Artemis.Editor.AssetBrowser\Artemis.Editor.AssetBrowser.csproj" />
 	  <ProjectReference Include="..\Artemis.Editor.Project\Artemis.Editor.Project.csproj" />
-	  <ProjectReference Include="..\Artemis.Editor.Settings\Artemis.Editor.Settings.csproj" />
 	  <ProjectReference Include="..\Artemis.Editor\Artemis.Editor.csproj" />
+	  <ProjectReference Include="..\Artemis.Interfaces\Artemis.Editor.Interfaces.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -7,7 +7,5 @@
 	Title="Artemis Editor"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        ContentTemplate="{DataTemplate Editor:EditorMainPage}"
-        Route="MainPage" />
+    <ShellContent ContentTemplate="{DataTemplate Editor:EditorMainPage}" Route="MainPage" />
 </Shell>

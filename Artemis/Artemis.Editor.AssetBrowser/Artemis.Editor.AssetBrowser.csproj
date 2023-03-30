@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0;net7.0-maccatalyst</TargetFrameworks>
@@ -18,7 +18,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Artemis.Editor.Settings\Artemis.Editor.Settings.csproj" />
+	  <ProjectReference Include="..\Artemis.Editor.FileIO\Artemis.Editor.FileIO.csproj" />
+	  <ProjectReference Include="..\Artemis.Interfaces\Artemis.Editor.Interfaces.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Enums\" />
 	</ItemGroup>
 
 </Project>

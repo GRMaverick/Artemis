@@ -1,8 +1,81 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Artemis.Editor.AssetBrowser.Views.AssetListView">
+             xmlns:Selector="clr-namespace:Artemis.Editor.AssetBrowser.TemplateSelectors"
+             xmlns:Resources="clr-namespace:Artemis.Editor.Controls.Resources.Styles;assembly=Artemis.Editor.Controls"
+             x:Class="Artemis.Editor.AssetBrowser.Views.AssetListView"
+             WidthRequest="250">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <Resources:Colours />
+            </ResourceDictionary.MergedDictionaries>
+
+
+            <DataTemplate x:Key="ShaderItemTemplate">
+                <ViewCell Tapped="ViewCell_Tapped">
+                    <Grid Margin="4">
+                        <HorizontalStackLayout>
+                            <Border WidthRequest="20" HeightRequest="20" 
+                                    BackgroundColor="{StaticResource Color_Pink}"
+                                    Stroke="{StaticResource Brush_ArtemisPrimary}"
+                                    StrokeThickness="3" />
+                            <Label Margin="4,0,0,0" Text="{Binding Name}" TextColor="{StaticResource White}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="FolderItemTemplate">
+                <ViewCell Tapped="ViewCell_Tapped">
+                    <Grid Margin="4">
+                        <HorizontalStackLayout>
+                            <Border WidthRequest="20" HeightRequest="20" 
+                                    BackgroundColor="{StaticResource Color_Green}"
+                                    Stroke="{StaticResource Brush_ArtemisPrimary}"
+                                    StrokeThickness="3" />
+                            <Label Margin="4,0,0,0" Text="{Binding Name}" TextColor="{StaticResource White}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="UnknownItemTemplate">
+                <ViewCell Tapped="ViewCell_Tapped">
+                    <Grid Margin="4">
+                        <HorizontalStackLayout>
+                            <Border WidthRequest="20" HeightRequest="20" 
+                                    BackgroundColor="{StaticResource Color_Yellow}"
+                                    Stroke="{StaticResource Brush_ArtemisPrimary}"
+                                    StrokeThickness="3" />
+                            <Label Margin="4,0,0,0" Text="{Binding Name}" TextColor="{StaticResource White}" />
+                        </HorizontalStackLayout>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <Selector:AssetItemViewTemplateSelector x:Key="AssetItemViewSelector"
+                                                    ShaderTemplate="{StaticResource ShaderItemTemplate}"
+                                                    FolderTemplate="{StaticResource FolderItemTemplate}"
+                                                    UnknownTemplate="{StaticResource UnknownItemTemplate}"/>
+        </ResourceDictionary>
+    </ContentView.Resources>
+
     <ContentView.Content>
-        <ListView x:Name="ListView" />
+        <Grid Background="{StaticResource Brush_ArtemisTertiary}">
+            <ListView x:Name="ListView"
+                      Margin="4"
+                      SelectionMode="Single"
+                      ItemSelected="OnItemSelected"
+                      Background="{StaticResource Gray950}"
+                      ItemsSource="{Binding SelectedNode.Children}"
+                      ItemTemplate="{StaticResource AssetItemViewSelector}">
+                <ListView.Header>
+                    <Grid Background="{StaticResource Brush_ArtemisTertiary}">
+                        <Label Text="Asset Browser" 
+                           Margin="4"
+                           TextColor="{StaticResource White}"
+                           FontSize="14" />
+                    </Grid>
+                </ListView.Header>
+            </ListView>
+        </Grid>
     </ContentView.Content>
 </ContentView>
