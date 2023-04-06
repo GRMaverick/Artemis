@@ -1,10 +1,13 @@
 name: "[Release]: Artemis Editor"
-run-name: Artemis Editor Build - ${{ github.actor }}
+run-name: Release - Artemis Editor - ${{ github.actor }}
+
 on:
   push:
     branches: ["main"]
+
 jobs:
-  build: 
+
+  Build-Solution:
     env:
       SolutionName: Artemis\Artemis.sln
       Configuration: Release
@@ -17,7 +20,16 @@ jobs:
       with:
         fetch-depth: 0
     
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: "C:\\Program Files\\dotnet"
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7
+	
     - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
