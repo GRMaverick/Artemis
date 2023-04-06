@@ -9,7 +9,7 @@ on:
 jobs:      
   Build-Solution:
     env:
-      SolutionName: Artemis\Artemis.sln
+      SolutionName: ArtemisEditor\Artemis.sln
       Configuration: Release
       Cores: 20
 
