@@ -20,7 +20,7 @@ jobs:
       
   Build-Solution:
     env:
-      SolutionName: Artemis\Artemis.sln
+      SolutionName: ArtemisEditor\Artemis.sln
       Configuration: Debug
       Cores: 20
 
