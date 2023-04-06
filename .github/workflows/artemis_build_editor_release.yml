@@ -10,7 +10,7 @@ jobs:
   Build-Solution:
     env:
       SolutionName: Artemis\Artemis.sln
-      Configuration: Debug
+      Configuration: Release
       Cores: 20
 
     runs-on: windows-latest
