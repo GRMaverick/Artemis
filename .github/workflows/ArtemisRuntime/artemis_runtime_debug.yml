@@ -4,7 +4,7 @@ run-name: Artemis Runtime - ${{ github.actor }}
   
 on:
   push:
-    branches: ["main"]
+    branches: ["Runtime"]
     
 jobs:      
   Build-Debug:
