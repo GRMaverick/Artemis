@@ -113,7 +113,7 @@ jobs:
     - name: Run Tests
       shell: pwsh
       run: |
-        $TestDlls = Get-ChildItem -Path .\ArtemisRuntime_Debug -Filter *.UnitTests.dll
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
         $VSTestArgs = @()
         foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
         & vstest.console.exe $VSTestArgs
