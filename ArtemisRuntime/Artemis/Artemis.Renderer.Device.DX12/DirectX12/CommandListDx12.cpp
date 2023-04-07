@@ -12,7 +12,7 @@
 #include <ImGUI\imgui_impl_dx12.h>
 
 //#pragma comment(lib, "D:\\Training\\DX12_Project\\packages\\WinPixEventRuntime.1.0.220810001\\bin\\x64\\WinPixEventRuntime.lib")
-#pragma comment(lib, "C:\\Users\\Maverick\\Documents\\GitHub\\Artemis\\ArtemisRuntime\\packages\\WinPixEventRuntime.1.0.220810001\\bin\\x64\\WinPixEventRuntime.lib")
+//#pragma comment(lib, "C:\\Users\\Maverick\\Documents\\GitHub\\Artemis\\ArtemisRuntime\\packages\\WinPixEventRuntime.1.0.220810001\\bin\\x64\\WinPixEventRuntime.lib")
 
 using namespace Microsoft::WRL;
 
