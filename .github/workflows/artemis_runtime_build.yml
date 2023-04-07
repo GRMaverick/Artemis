@@ -46,10 +46,10 @@ jobs:
       with:
         name: ArtemisRuntime_Debug
         path: |
-          ArtemisRuntime\$env:Platform\$env:Configuration\*.exe
-          ArtemisRuntime\$env:Platform\$env:Configuration\*.pdb
-          ArtemisRuntime\$env:Platform\$env:Configuration\*.dll
-          ArtemisRuntime\$env:Platform\$env:Configuration\*.ini
+          ArtemisRuntime\x64\Debug\*.exe
+          ArtemisRuntime\x64\Debug\*.pdb
+          ArtemisRuntime\x64\Debug\*.dll
+          ArtemisRuntime\x64\Debug\*.ini
       
   Build-Release:
     env:
