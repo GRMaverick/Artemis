@@ -1,6 +1,5 @@
 
 name: "[Runtime] - Build"
-run-name: Artemis Runtime - ${{ github.actor }}
 run-name: Artemis Runtime
   
 on:
