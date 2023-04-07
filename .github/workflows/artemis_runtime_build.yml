@@ -144,7 +144,7 @@ jobs:
         & vstest.console.exe $VSTestArgs
 
   Create-Pull-Request:
-    needs: [ Perform-UnitTests-Debug, Perform-UnityTests-Release ]
+    needs: [ Perform-UnitTests-Debug, Perform-UnitTests-Release ]
     runs-on: windows-latest
     steps:
     - name: Create Pull Request
