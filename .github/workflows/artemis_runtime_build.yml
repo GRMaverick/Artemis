@@ -142,3 +142,15 @@ jobs:
         foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
         echo $VSTestArgs
         & vstest.console.exe $VSTestArgs
+
+  Create-Pull-Request:
+    needs: [ Perform-UnitTests-Debug, Perform-UnityTests-Release ]
+    runs-on: windows-latest
+    steps:
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: main
+        author: ${{ github.actor }}
+        reviewers: [ GRMaverick ]
+        signoff: true
