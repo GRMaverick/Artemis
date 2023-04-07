@@ -10,6 +10,7 @@ jobs:
   Build-Debug:
     env:
       SolutionName: ArtemisRuntime\DX12_Project.sln
+      Platform: x64
       Configuration: Debug
       Cores: 20
 
@@ -44,6 +45,11 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ArtemisRuntime_Debug
+        path: |
+        ArtemisRuntime\$env:Platform\$env:Configuration\**.exe
+        ArtemisRuntime\$env:Platform\$env:Configuration\**.pdb
+        ArtemisRuntime\$env:Platform\$env:Configuration\**.dll
+        ArtemisRuntime\$env:Platform\$env:Configuration\**.ini
       
   Build-Release:
     env:
@@ -82,6 +88,11 @@ jobs:
     #   uses: actions/upload-artifact@v3
     #   with:
     #     name: ArtemisRuntime_Release
+    #   path: |
+    #     ArtemisRuntime\$env:Platform\$env:Configuration\**.exe
+    #     ArtemisRuntime\$env:Platform\$env:Configuration\**.pdb
+    #     ArtemisRuntime\$env:Platform\$env:Configuration\**.dll
+    #     ArtemisRuntime\$env:Platform\$env:Configuration\**.ini
   
   # Perform-UnitTests:
   #   env:
