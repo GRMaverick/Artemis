@@ -111,12 +111,8 @@ jobs:
         name: ArtemisRuntime_Debug
 
     - name: Run Tests
-      shell: pwsh
-      run: |
-        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
-        $VSTestArgs = @()
-        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
-        echo $VSTestArgs
-        $VSTestExe = (Get-ChildItem -Path .\ -Filter vstest.console.exe -Recurse).FullName
-        echo $VSTestExe
-        & $VSTestExe $VSTestArgs
+      uses: microsoft-approved-actions/vstest@master
+      with:
+        testAssembly: *.UnitTest.dll
+        searchFolder: .\
+        runInParallel: false
