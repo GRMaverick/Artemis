@@ -121,3 +121,24 @@ jobs:
         foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
         echo $VSTestArgs
         & vstest.console.exe $VSTestArgs
+
+  Perform-UnitTests-Release:
+    needs: [Build-Release]
+    runs-on: windows-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ArtemisRuntime_Release
+
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1.2
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        & vstest.console.exe $VSTestArgs
