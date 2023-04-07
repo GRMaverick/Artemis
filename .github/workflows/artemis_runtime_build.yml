@@ -110,9 +110,14 @@ jobs:
       with:
         name: ArtemisRuntime_Debug
 
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1.2
+
     - name: Run Tests
-      uses: microsoft-approved-actions/vstest@master
-      with:
-        testAssembly: "*.UnitTest.dll"
-        searchFolder: .\
-        runInParallel: false
+      shell: pwsh
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        & vstest.console.exe $VSTestArgs
