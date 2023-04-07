@@ -153,9 +153,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)_Dependencies\lib;$(SolutionDir)_Toolkits\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>COPY /Y $(ProjectDir)\_Dependencies\* $(SolutionDir)$(Configuration)\</Command>
+      <Command>xcopy /y /s /q $(SolutionDir)_Dependencies\dll\*.* $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
