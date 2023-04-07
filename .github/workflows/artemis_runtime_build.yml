@@ -152,5 +152,6 @@ jobs:
       with:
         branch: main
         author: ${{ github.actor }}
-        reviewers: [ GRMaverick ]
+        reviewers: |
+          GRMaverick
         signoff: true
