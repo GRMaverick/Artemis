@@ -147,5 +147,6 @@ jobs:
     needs: [ Perform-UnitTests-Debug, Perform-UnitTests-Release ]
     runs-on: windows-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
