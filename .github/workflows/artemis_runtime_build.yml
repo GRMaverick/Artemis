@@ -41,7 +41,7 @@ jobs:
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
     
-    - name: 'Upload Debug Artifact'
+    - name: 'Upload Artifact'
       uses: actions/upload-artifact@v3
       with:
         name: ArtemisRuntime_Debug
@@ -84,15 +84,15 @@ jobs:
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
     
-    # - name: 'Upload Release Artifact'
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ArtemisRuntime_Release
-    #   path: |
-    #     ArtemisRuntime\$env:Platform\$env:Configuration\*.exe
-    #     ArtemisRuntime\$env:Platform\$env:Configuration\*.pdb
-    #     ArtemisRuntime\$env:Platform\$env:Configuration\*.dll
-    #     ArtemisRuntime\$env:Platform\$env:Configuration\*.ini
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ArtemisRuntime_Release
+        path: |
+          ArtemisRuntime\x64\Release\*.exe
+          ArtemisRuntime\x64\Release\*.pdb
+          ArtemisRuntime\x64\Release\*.dll
+          ArtemisRuntime\x64\Release\*.ini
   
   # Perform-UnitTests:
   #   env:
