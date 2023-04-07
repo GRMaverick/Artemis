@@ -1,6 +1,7 @@
 
 name: "[Runtime] - Build"
 run-name: Artemis Runtime - ${{ github.actor }}
+run-name: Artemis Runtime
   
 on:
   push:
@@ -39,6 +40,11 @@ jobs:
       
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
+    
+    - name: 'Upload Debug Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ArtemisRuntime_Debug
       
   Build-Release:
     env:
@@ -72,3 +78,16 @@ jobs:
       
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
+    
+    # - name: 'Upload Release Artifact'
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ArtemisRuntime_Release
+  
+  # Perform-UnitTests:
+  #   env:
+  #     SolutionName: ArtemisRuntime\DX12_Project.sln
+  #   runs-on: windows-latest
+  #   steps:
+  #   - name: Download Runtime Artefacts
+  #     uses: 
