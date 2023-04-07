@@ -116,4 +116,7 @@ jobs:
         $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
         $VSTestArgs = @()
         foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
-        & vstest.console.exe $VSTestArgs
+        echo $VSTestArgs
+        $VSTestExe = (Get-ChildItem -Path .\ -Filter vstest.console.exe -Recurse).FullName
+        echo $VSTestExe
+        & $VSTestExe $VSTestArgs
