@@ -113,6 +113,6 @@ jobs:
     - name: Run Tests
       uses: microsoft-approved-actions/vstest@master
       with:
-        testAssembly: *.UnitTest.dll
+        testAssembly: "*.UnitTest.dll"
         searchFolder: .\
         runInParallel: false
