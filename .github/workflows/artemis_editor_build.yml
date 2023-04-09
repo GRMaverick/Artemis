@@ -119,7 +119,7 @@ jobs:
         echo $VSTestArgs
         & vstest.console.exe $VSTestArgs
 
-  Perform-UnitTests-Debug:
+  Perform-UnitTests-Release:
     needs: [Build-Release]
     runs-on: windows-latest
     steps:
