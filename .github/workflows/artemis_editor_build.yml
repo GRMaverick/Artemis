@@ -1,5 +1,5 @@
 name: "[Editor] - Build"
-run-name: Artemis Editor - ${{ github.actor }}
+run-name: Artemis Editor
   
 on:
   push:
@@ -41,7 +41,17 @@ jobs:
       
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
-      
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ArtemisEditor_Debug
+        path: |
+          **\*.exe
+          **\*.pdb
+          **\*.dll
+          **\*.ini
+
   Build-Release:
     env:
       SolutionName: ArtemisEditor\Artemis.sln
@@ -77,3 +87,55 @@ jobs:
       
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ArtemisEditor_Release
+        path: |
+          **\*.exe
+          **\*.pdb
+          **\*.dll
+          **\*.ini
+
+  Perform-UnitTests-Debug:
+    needs: [Build-Debug]
+    runs-on: windows-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ArtemisEditor_Debug
+
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1.2
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        & vstest.console.exe $VSTestArgs
+
+  Perform-UnitTests-Debug:
+    needs: [Build-Release]
+    runs-on: windows-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ArtemisEditor_Release
+
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1.2
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        & vstest.console.exe $VSTestArgs
