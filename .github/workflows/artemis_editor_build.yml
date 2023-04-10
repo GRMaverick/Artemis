@@ -99,6 +99,8 @@ jobs:
           **\*.ini
 
   Perform-UnitTests-Debug:
+    env:
+      SolutionName: ArtemisEditor\Artemis.sln
     needs: [Build-Debug]
     runs-on: windows-latest
     steps:
@@ -126,14 +128,11 @@ jobs:
 
     - name: Run Tests
       shell: pwsh
-      run: |
-        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
-        $VSTestArgs = @()
-        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
-        echo $VSTestArgs
-        & vstest.console.exe $VSTestArgs
+      run: dotnet test $env:SolutionName
 
   Perform-UnitTests-Release:
+    env:
+      SolutionName: ArtemisEditor\Artemis.sln
     needs: [Build-Release]
     runs-on: windows-latest
     steps:
@@ -161,9 +160,4 @@ jobs:
 
     - name: Run Tests
       shell: pwsh
-      run: |
-        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
-        $VSTestArgs = @()
-        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
-        echo $VSTestArgs
-        & vstest.console.exe $VSTestArgs
+      run: dotnet test $env:SolutionName
