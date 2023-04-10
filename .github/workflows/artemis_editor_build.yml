@@ -47,10 +47,10 @@ jobs:
       with:
         name: ArtemisEditor_Debug
         path: |
-          **\*.exe
-          **\*.pdb
-          **\*.dll
-          **\*.ini
+          ArtemisEditor\**\*.exe
+          ArtemisEditor\**\*.pdb
+          ArtemisEditor\**\*.dll
+          ArtemisEditor\**\*.ini
 
   Build-Release:
     env:
@@ -93,14 +93,12 @@ jobs:
       with:
         name: ArtemisEditor_Release
         path: |
-          **\*.exe
-          **\*.pdb
-          **\*.dll
-          **\*.ini
+          ArtemisEditor\**\*.exe
+          ArtemisEditor\**\*.pdb
+          ArtemisEditor\**\*.dll
+          ArtemisEditor\**\*.ini
 
   Perform-UnitTests-Debug:
-    env:
-      SolutionName: ArtemisEditor\Artemis.sln
     needs: [Build-Debug]
     runs-on: windows-latest
     steps:
@@ -109,9 +107,6 @@ jobs:
       with:
         name: ArtemisEditor_Debug
 
-    - name: Setup VSTest Path
-      uses: darenm/Setup-VSTest@v1.2
-
     - name: Cache .NET Core
       id: cache-dotnet
       uses: actions/cache@v3
@@ -128,11 +123,14 @@ jobs:
 
     - name: Run Tests
       shell: pwsh
-      run: dotnet test $env:SolutionName
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        foreach($Dll in $TestDlls) { dotnet test $Dll }
 
   Perform-UnitTests-Release:
-    env:
-      SolutionName: ArtemisEditor\Artemis.sln
     needs: [Build-Release]
     runs-on: windows-latest
     steps:
@@ -141,9 +139,6 @@ jobs:
       with:
         name: ArtemisEditor_Release
 
-    - name: Setup VSTest Path
-      uses: darenm/Setup-VSTest@v1.2
-
     - name: Cache .NET Core
       id: cache-dotnet
       uses: actions/cache@v3
@@ -160,4 +155,9 @@ jobs:
 
     - name: Run Tests
       shell: pwsh
-      run: dotnet test $env:SolutionName
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        foreach($Dll in $TestDlls) { dotnet test $Dll }
