@@ -110,6 +110,20 @@ jobs:
     - name: Setup VSTest Path
       uses: darenm/Setup-VSTest@v1.2
 
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: "C:\\Program Files\\dotnet"
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7
+        
+    - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
     - name: Run Tests
       shell: pwsh
       run: |
@@ -130,6 +144,20 @@ jobs:
 
     - name: Setup VSTest Path
       uses: darenm/Setup-VSTest@v1.2
+
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: "C:\\Program Files\\dotnet"
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7
+        
+    - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
 
     - name: Run Tests
       shell: pwsh
