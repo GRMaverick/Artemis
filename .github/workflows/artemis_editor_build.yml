@@ -47,11 +47,7 @@ jobs:
       with:
         name: ArtemisEditor_Debug
         path: |
-          ArtemisEditor\**\*.exe
-          ArtemisEditor\**\*.pdb
-          ArtemisEditor\**\*.dll
-          ArtemisEditor\**\*.ini
-          ArtemisEditor\**\*.json
+          ArtemisEditor\**\bin\Debug\**\*.*
 
   Build-Release:
     env:
@@ -94,11 +90,7 @@ jobs:
       with:
         name: ArtemisEditor_Release
         path: |
-          ArtemisEditor\**\*.exe
-          ArtemisEditor\**\*.pdb
-          ArtemisEditor\**\*.dll
-          ArtemisEditor\**\*.ini
-          ArtemisEditor\**\*.json
+          ArtemisEditor\**\bin\Release\**\*.*
 
   Perform-UnitTests-Debug:
     needs: [Build-Debug]
