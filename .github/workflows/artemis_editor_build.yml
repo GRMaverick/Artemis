@@ -51,6 +51,7 @@ jobs:
           ArtemisEditor\**\*.pdb
           ArtemisEditor\**\*.dll
           ArtemisEditor\**\*.ini
+          ArtemisEditor\**\*.json
 
   Build-Release:
     env:
@@ -97,6 +98,7 @@ jobs:
           ArtemisEditor\**\*.pdb
           ArtemisEditor\**\*.dll
           ArtemisEditor\**\*.ini
+          ArtemisEditor\**\*.json
 
   Perform-UnitTests-Debug:
     needs: [Build-Debug]
