@@ -155,3 +155,13 @@ jobs:
         foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
         echo $VSTestArgs
         foreach($Dll in $TestDlls) { dotnet test $Dll }
+        
+  Create-Pull-Request:
+    needs: [ Perform-UnitTests-Debug, Perform-UnitTests-Release ]
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: main
