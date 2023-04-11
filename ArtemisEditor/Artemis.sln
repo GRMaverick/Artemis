@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Editor", "Editor", "{0B3619
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit Tests", "Unit Tests", "{4697A985-5150-4679-972B-BC981D7AB1B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Editor.AssetBrowser.UnitTests", "UnitTests\Artemis.Editor.AssetBrowser.UnitTests\Artemis.Editor.AssetBrowser.UnitTests.csproj", "{0A18A76B-6E91-477C-B569-5B027DFB1F91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Editor.AssetBrowser.UnitTests", "UnitTests\Artemis.Editor.AssetBrowser.UnitTests\Artemis.Editor.AssetBrowser.UnitTests.csproj", "{0A18A76B-6E91-477C-B569-5B027DFB1F91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
