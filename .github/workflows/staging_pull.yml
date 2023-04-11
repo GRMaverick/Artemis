@@ -8,12 +8,14 @@ on:
     - completed
 
 jobs:
-  Create-PR:
+  on-success:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     env:
       SourceRef: Development
       TargetRef: Staging
 
     runs-on: windows-latest
+    steps:
     - name: Checkout Development
       uses: actions/checkout@v3
       with:
@@ -24,3 +26,8 @@ jobs:
       with:
         base: $env:TargetRef
         branch: $env:SourceRef
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'The triggering workflow failed'
