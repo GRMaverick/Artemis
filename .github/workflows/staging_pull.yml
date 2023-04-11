@@ -8,7 +8,7 @@ on:
     - completed
 
 jobs:
-  Create-Pull-Request:
+  Create-PR:
     env:
       SourceRef: Development
       TargetRef: Staging

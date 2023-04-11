@@ -1,5 +1,5 @@
 name: "Dev - Build"
-run-name: Dev Pipeline - ${{ github.ref_name }}
+run-name: Dev Build - ${{ github.ref_name }}
 
 on:
   push:
