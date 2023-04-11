@@ -292,7 +292,7 @@ jobs:
         echo $VSTestArgs
         foreach($Dll in $TestDlls) { dotnet test $Dll }
 
-  Create-Pull-Request:
+  Merge-Branch:
     needs: [ 
       Perform-Runtime-UnitTests-Debug, 
       Perform-Runtime-UnitTests-Release,
@@ -301,8 +301,13 @@ jobs:
     ]
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
+    - name: Checkout Change
+      uses: actions/checkout@v3
+      
+    - name: Merge ${GITHUB_REF##*/} -> Development
+      uses: devmasx/merge-branch@master
       with:
-        base: Development
+        type: now
+        from_branch: ${GITHUB_REF##*/}
+        target_branch: Development
+        github_token: ${{ secrets.GITHUB_TOKEN }}
