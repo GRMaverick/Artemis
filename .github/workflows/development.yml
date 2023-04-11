@@ -1,10 +1,10 @@
 name: "Development Branches"
-run-name: Dev Pipeline
+run-name: Dev Pipeline - ${{ github.ref_name }}
   
 on:
   push:
     branches: [ "*Development*" ]
-    
+
 jobs:
   Build-Runtime-Debug:
     env:
@@ -303,6 +303,15 @@ jobs:
     steps:
     - name: Checkout Change
       uses: actions/checkout@v3
+
+    - name: Merge from Development
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        from_branch: Development
+        target_branch: ${{ github.ref_name }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: Pre-merge Sync from GitHub Action, Triggered by ${{ github.actor }}
       
     - name: Merge to Development
       uses: devmasx/merge-branch@master
@@ -310,3 +319,4 @@ jobs:
         type: now
         target_branch: Development
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: Post-merge Sync from GitHub Action, Triggered by ${{ github.actor }}
