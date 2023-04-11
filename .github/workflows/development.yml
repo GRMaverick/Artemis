@@ -1,10 +1,12 @@
 name: "Development Branches"
-run-name: Dev Pipeline
+run-name: Dev Pipeline - ${{ github.ref_name }}
   
 on:
   push:
     branches: [ "*Development*" ]
-    
+  merge:
+    branches: [ "Development" ]
+       
 jobs:
   Build-Runtime-Debug:
     env:
