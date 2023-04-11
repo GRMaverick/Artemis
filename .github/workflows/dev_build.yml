@@ -1,10 +1,10 @@
-name: "Development Branches"
-run-name: Development
-  
+name: "Dev - Build"
+run-name: Dev Build - ${{ github.ref_name }}
+
 on:
   push:
-    branches: [ "Development/**" ]
-    
+    branches: [ "*Development*" ]
+
 jobs:
   Build-Runtime-Debug:
     env:
@@ -292,18 +292,31 @@ jobs:
         echo $VSTestArgs
         foreach($Dll in $TestDlls) { dotnet test $Dll }
 
-  Create-Pull-Request:
+  Merge-Branch:
     needs: [ 
       Perform-Runtime-UnitTests-Debug, 
       Perform-Runtime-UnitTests-Release,
-      Perform-Tools-UnitTest-Debug,
-      Perform-Tools-UnitTest-Release 
+      Perform-Tools-UnitTests-Debug,
+      Perform-Tools-UnitTests-Release 
     ]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
+    - name: Checkout Change
+      uses: actions/checkout@v3
+
+    - name: Merge from Development
+      uses: devmasx/merge-branch@master
       with:
-        branch: Tools
-        base: main
+        type: now
+        from_branch: Development
+        target_branch: ${{ github.ref_name }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: Pre-merge Sync from GitHub Action, Triggered by ${{ github.actor }}
+      
+    - name: Merge to Development
+      uses: devmasx/merge-branch@master
+      with:
+        type: now
+        target_branch: Development
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: Post-merge Sync from GitHub Action, Triggered by ${{ github.actor }}
