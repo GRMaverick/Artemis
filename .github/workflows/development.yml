@@ -304,7 +304,7 @@ jobs:
     - name: Checkout Change
       uses: actions/checkout@v3
       
-    - name: Merge ${{GITHUB_REF##*/}} -> Development
+    - name: Merge to Development
       uses: devmasx/merge-branch@master
       with:
         type: now
