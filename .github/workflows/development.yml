@@ -1,9 +1,9 @@
 name: "Development Branches"
-run-name: Development
+run-name: Dev Pipeline
   
 on:
   push:
-    branches: [ "Development/**" ]
+    branches: [ "*Development*" ]
     
 jobs:
   Build-Runtime-Debug:
@@ -305,5 +305,4 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
       with:
-        branch: Tools
-        base: main
+        base: Development
