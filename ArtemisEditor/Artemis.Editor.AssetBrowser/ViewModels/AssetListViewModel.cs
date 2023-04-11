@@ -51,6 +51,7 @@ namespace Artemis.Editor.AssetBrowser.ViewModels
         {
             AssetItemType.Project,
         };
+
         private void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 

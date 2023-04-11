@@ -1,5 +1,5 @@
 name: "[Editor] - Build"
-run-name: Artemis Editor - ${{ github.actor }}
+run-name: Artemis Editor
   
 on:
   push:
@@ -41,7 +41,14 @@ jobs:
       
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
-      
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ArtemisEditor_Debug
+        path: |
+          ArtemisEditor\**\bin\Debug\**\*.*
+
   Build-Release:
     env:
       SolutionName: ArtemisEditor\Artemis.sln
@@ -77,3 +84,85 @@ jobs:
       
     - name: Build Target
       run: msbuild $env:SolutionName /t:Build /p:Configuration=$env:Configuration /m:$env:Cores
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ArtemisEditor_Release
+        path: |
+          ArtemisEditor\**\bin\Release\**\*.*
+
+  Perform-UnitTests-Debug:
+    needs: [Build-Debug]
+    runs-on: windows-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ArtemisEditor_Debug
+
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: "C:\\Program Files\\dotnet"
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7
+        
+    - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        foreach($Dll in $TestDlls) { dotnet test $Dll }
+
+  Perform-UnitTests-Release:
+    needs: [Build-Release]
+    runs-on: windows-latest
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ArtemisEditor_Release
+
+    - name: Cache .NET Core
+      id: cache-dotnet
+      uses: actions/cache@v3
+      with:
+        path: "C:\\Program Files\\dotnet"
+        key: ${{ runner.os }}-dotnet-7
+        restore-keys: ${{ runner.os }}-dotnet-7
+        
+    - name: Install .NET Core
+      if: ${{ steps.cache-dotnet.outputs.cache-hit != 'true' }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Run Tests
+      shell: pwsh
+      run: |
+        $TestDlls = Get-ChildItem -Path .\ -Filter *.UnitTests.dll -Recurse
+        $VSTestArgs = @()
+        foreach($Dll in $TestDlls) { $VSTestArgs = $VSTestArgs + $Dll.FullName }
+        echo $VSTestArgs
+        foreach($Dll in $TestDlls) { dotnet test $Dll }
+
+  Create-Pull-Request:
+    needs: [ Perform-UnitTests-Debug, Perform-UnitTests-Release ]
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        branch: Tools
+        base: main
