@@ -2,6 +2,7 @@ name: "Dev - Build"
 run-name: Dev Build - ${{ github.ref_name }}
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "*Development*" ]
 
