@@ -19,13 +19,13 @@ jobs:
     - name: Checkout Development
       uses: actions/checkout@v3
       with:
-        ref: $env:SourceRef
+        ref: ${{ env:SourceRef }}
 
     - name: Create Pull Request (Development -> Staging)
       uses: peter-evans/create-pull-request@v5
       with:
-        base: $env:TargetRef
-        branch: $env:SourceRef
+        base: ${{ env:TargetRef }}
+        branch: ${{ env:SourceRef }}
   on-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
