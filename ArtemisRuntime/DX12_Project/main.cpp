@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <shlobj.h>
 
-#include "Defines.h"
+#include "CoreDefines.h"
 
 #include "Window/GameWindow.h"
 #include "Loaders/CLParser.h"

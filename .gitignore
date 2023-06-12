@@ -373,3 +373,4 @@ local.properties
 
 # Directory Build overrides for local setups
 Directory.Build.Override.props
+/ArtemisRuntime/DX12_Project/_Dependencies/lib/ImGUI.idb

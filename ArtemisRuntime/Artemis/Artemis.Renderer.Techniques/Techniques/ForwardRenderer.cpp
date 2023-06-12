@@ -45,11 +45,6 @@ using namespace Artemis::Memory;
 using namespace Artemis::Utilities;
 
 #define PRAGMA_TODO(todo)	__pragma(message("[TODO]: "todo));
-
-#define CONTENT_PATH std::string("C:\\Users\\Maverick\\Documents\\GitHub\\Artemis\\ArtemisRuntime\\x64\\Debug\\_Content\\")
-#define SHADERS_PATH CONTENT_PATH + std::string("Shaders\\*")
-#define MODELS_PATH	CONTENT_PATH + std::string("Models\\")
-#define SCENES_PATH CONTENT_PATH + std::string("Scenes\\")
 #define BACK_BUFFERS 2
 
 namespace Artemis::Renderer::Techniques
@@ -131,7 +126,7 @@ namespace Artemis::Renderer::Techniques
 		if ( !m_pDevice->CreateSwapChain( &m_pSwapChain, m_pGfxCmdQueue, _pWindow, BACK_BUFFERS, L"Swap Chain" ) )
 			return false;
 
-		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( SHADERS_PATH );
+		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( std::string(CLParser::Instance()->GetArgument("data")) + std::string("Shaders\\*") );
 
 		if ( !m_pDevice->CreateDescriptorHeap( Interfaces::DescriptorHeapType_CbvSrvUav, &m_pImGuiSrvHeap, Interfaces::DescriptorHeapFlags_ShaderVisible, 1, L"ImGUI SRV" ) )
 			return false;
@@ -249,7 +244,7 @@ namespace Artemis::Renderer::Techniques
 			{
 				Artemis::Renderer::Assets::RenderEntity* pInstance = new Artemis::Renderer::Assets::RenderEntity();
 
-				const std::string pModelPath = MODELS_PATH + std::string(instance->first_attribute("ModelPath")->value());
+				const std::string pModelPath = CLParser::Instance()->GetArgument("data") + std::string("Models\\") + std::string(instance->first_attribute("ModelPath")->value());
 				pInstance->SetModelName(instance->first_attribute("ModelName")->value());
 				pInstance->LoadModelFromFile(pModelPath.c_str(), m_pDevice, pList);
 				pInstance->SetMaterial(instance->first_attribute("Material")->value());
@@ -288,7 +283,16 @@ namespace Artemis::Renderer::Techniques
 		LogInfo( "Loading Models:" );
 
 		PRAGMA_TODO("Command Line Arg for Scene Root");
-		if ( !LoadScene(SCENES_PATH + "SponzaScene.xml") )
+		if (!CLParser::Instance()->HasArgument("scene") || !CLParser::Instance()->HasArgument("data"))
+		{
+			LogError("No Scene File Defined in CLParser");
+			return false;
+		}
+
+		const std::string strScenePath = std::string(CLParser::Instance()->GetArgument("data")) +
+			std::string("Scenes\\") +
+			std::string(CLParser::Instance()->GetArgument("scene"));
+		if ( !LoadScene(strScenePath))
 		{
 			LogError( "Scene Loading Failed" );
 			return false;

@@ -23,17 +23,17 @@ namespace Artemis::Utilities
 		return &rParser;
 	}
 
-	bool CLParser::Initialise( char* _pCmds )
+	bool CLParser::Initialise( const char* _pCmds )
 	{
 		LogInfo( "Command Line Arguments: %s", _pCmds, strlen(_pCmds) );
 
 		//
 		// Process Line
 		//
-		static constexpr int kSeekSlash = 1;
+		static constexpr int kSeekDash = 1;
 		for ( int i = 0; i < strlen( _pCmds ); ++i )
 		{
-			if ( _pCmds[i] == '/' )
+			if ( _pCmds[i] == '-' )
 				++m_uiNumArgs;
 		}
 
@@ -41,7 +41,7 @@ namespace Artemis::Utilities
 
 		int         iCurrentArg  = -1;
 		int         iBytesToRead = 0;
-		int         iState       = kSeekSlash;
+		int         iState       = kSeekDash;
 		const char* pHead        = nullptr;
 		for ( int i = 0; i < strlen( _pCmds ) + 1; ++i )
 		{
@@ -50,8 +50,8 @@ namespace Artemis::Utilities
 
 			switch ( iState )
 			{
-				case kSeekSlash:
-					if ( _pCmds[i] == '/' )
+				case kSeekDash:
+					if ( _pCmds[i] == '-' )
 					{
 						pHead        = &_pCmds[i + 1];
 						iBytesToRead = 0;
@@ -62,8 +62,8 @@ namespace Artemis::Utilities
 				case kSeekSpace:
 					if ( _pCmds[i] == ' ' || _pCmds[i] == '\0' )
 					{
-						iState = kSeekSlash;
-						strncpy_s( m_pArguments[iCurrentArg].pValue, pHead, iBytesToRead < ARRAYSIZE( m_pArguments[iCurrentArg].pName ) ? iBytesToRead - 1 : ARRAYSIZE( m_pArguments[iCurrentArg].pName ) );
+						iState = kSeekDash;
+						strncpy_s( m_pArguments[iCurrentArg].pValue, pHead, iBytesToRead < ARRAYSIZE( m_pArguments[iCurrentArg].pValue) ? iBytesToRead - 1 : ARRAYSIZE( m_pArguments[iCurrentArg].pName ) );
 					}
 					break;
 				case kSeekColon:
@@ -79,7 +79,7 @@ namespace Artemis::Utilities
 					{
 						strncpy_s( m_pArguments[iCurrentArg].pName, pHead, iBytesToRead < ARRAYSIZE( m_pArguments[iCurrentArg].pName ) ? iBytesToRead - 1 : ARRAYSIZE( m_pArguments[iCurrentArg].pName ) );
 						strncpy_s( m_pArguments[iCurrentArg].pValue, "1", 1 );
-						iState = kSeekSlash;
+						iState = kSeekDash;
 					}
 					break;
 				default:
