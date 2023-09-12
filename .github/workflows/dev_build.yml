@@ -148,7 +148,7 @@ jobs:
     env:
       SolutionName: ArtemisEditor\Artemis.sln
       Configuration: Release
-      Cores: 20
+      Cores: 1
 
     runs-on: windows-latest
     steps:
