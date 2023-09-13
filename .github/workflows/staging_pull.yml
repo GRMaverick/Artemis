@@ -1,0 +1,34 @@
+name: "Staging - Pull"
+run-name: Staging - Pull Request - ${{ github.ref_name }}
+  
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Dev - Build" ]
+    types:
+    - completed
+
+jobs:
+  on-success:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      SourceRef: ${{ github.ref_name }}
+      TargetRef: Development
+
+    runs-on: windows-latest
+    steps:
+    - name: Checkout Development
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.SourceRef }}
+
+    - name: Create Pull Request (Development -> Staging)
+      uses: peter-evans/create-pull-request@v5
+      with:
+        base: ${{ env.TargetRef }}
+        branch: ${{ env.SourceRef }}
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo 'The triggering workflow failed'

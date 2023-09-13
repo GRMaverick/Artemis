@@ -9,7 +9,7 @@ namespace Artemis::Utilities
 		static CLParser* Instance( void );
 		~CLParser( void );
 
-		bool Initialise( char* _pCmds );
+		bool Initialise( const char* _pCmds );
 
 		bool        HasArgument( const char* _pArgName ) const;
 		const char* GetArgument( const char* _pArgName ) const;
@@ -18,7 +18,7 @@ namespace Artemis::Utilities
 		struct CLArgument
 		{
 			char pName[32];
-			char pValue[32];
+			char pValue[260];
 		};
 
 		CLParser( void );
