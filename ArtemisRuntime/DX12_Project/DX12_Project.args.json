@@ -3,6 +3,10 @@
   "Id": "acfae0bc-b3b1-447b-9948-3044f2898eea",
   "Items": [
     {
+      "Id": "960e122d-a722-4a19-aaa9-79677be73a9e",
+      "Command": "-scene:PBRScene.xml"
+    },
+    {
       "Id": "025e1d4f-f65d-4ad7-ac34-f93529fc4861",
       "Command": "-data:C:\\Users\\Maverick\\Documents\\GitHub\\BackupStuffFromArtemis\\_Content\\"
     },
