@@ -61,8 +61,8 @@ namespace Artemis::Renderer::Assets
 		DirectX::XMMATRIX m_matWorld;
 
 		Interfaces::IGpuResource* m_pConstantBuffer   = nullptr;
-		char                      m_pMaterialName[32] = {};
-		char                      m_pModelName[32]    = {};
+		char                      m_pMaterialName[64] = {};
+		char                      m_pModelName[64]    = {};
 	};
 }
 
