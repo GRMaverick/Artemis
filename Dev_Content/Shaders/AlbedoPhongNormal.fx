@@ -107,28 +107,6 @@ float3 NormalSampleToWorldSpace(float3 normalSample, float3 unitNormalW, float3 
 	return mul(normalSample, TBN);
 }
 
-// float4 MainPS(VSOutput _input) : SV_TARGET
-// {
-// 	float4 color = float4(1.0f, 0.0f, 0.0f, 1.0f);
-//  	float4 albedoColor = Albedo.Sample(AlbedoSampler, _input.Texture);
-// 	float4 normalSample = Normal.Sample(NormalSampler, _input.Texture);
-//     normalSample = (normalSample * 2.0f) - 1.0f;
-
-// 	float3 N = _input.Normal;
-// 	float3 T = normalize(_input.Tangent - dot(_input.Tangent, N) * N);
-// 	float3 B = cross(N, T);
-
-// 	float3x3 TBN = float3x3(T, B, N);
-// 	float3 normal = float4(mul(normalSample, TBN), 1.0f);
-
-	
-// 	float3 lightPos = LightPosition;
-//  	float diffuseAmount = saturate(dot(lightPos, normal));
-//  	float4 diffuse = LightDiffuse * albedoColor;
-
-// 	return float4(diffuse, 0.0f, 0.0f, 1.0f); //float4(bumpNormal, 1.0f);
-// }
-
 //
 // Entry Point
 //
@@ -161,5 +139,5 @@ float4 MainPS(VSOutput _input) : SV_TARGET
 	}
 
 	float4 returnColour = clamp(texColor * (specular + (diffuse * diffuseAmount) + ambient),0,1);
-	return returnColour; //float4(bumpNormal, 1.0f);
+	return returnColour;
 }

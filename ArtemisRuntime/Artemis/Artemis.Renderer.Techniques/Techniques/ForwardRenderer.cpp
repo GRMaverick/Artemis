@@ -360,7 +360,7 @@ namespace Artemis::Renderer::Techniques
 		return true;
 	}
 
-	float direction = 5.0;
+	float direction = 10.0;
 	void ForwardRenderer::Update( double _deltaTime )
 	{
 		UpdatePassConstants();
