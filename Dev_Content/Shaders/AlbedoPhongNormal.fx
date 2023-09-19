@@ -116,11 +116,8 @@ float4 MainPS(VSOutput _input) : SV_TARGET
 	float4 texColor = Albedo.Sample(AlbedoSampler, _input.Texture);
 	float4 normTex = Normal.Sample(NormalSampler, _input.Texture);
 
-	float3 bumpNormal = NormalSampleToWorldSpace(normTex, _input.Normal, _input.Tangent);
-
-	// Ambient Component
-	float4 ambient = LightAmbient * MaterialAmbient;
-
+	float3 bumpNormal = NormalSampleToWorldSpace(normTex.xyz, _input.Normal, _input.Tangent);
+	
 	// Diffuse Component
 	float3 lightPos = LightPosition;
 	float3 normal = bumpNormal;
@@ -138,6 +135,6 @@ float4 MainPS(VSOutput _input) : SV_TARGET
 		specular.rgb = specularAmount * (MaterialSpecular * LightSpecular).rgb;
 	}
 
-	float4 returnColour = clamp(texColor * (specular + (diffuse * diffuseAmount) + ambient),0,1);
+	float4 returnColour = clamp(texColor * (specular + (diffuse * diffuseAmount)),0,1);
 	return returnColour;
 }

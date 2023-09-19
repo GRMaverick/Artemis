@@ -648,6 +648,7 @@ namespace Artemis::Renderer::Techniques
 			m_pDevice->SetMaterial( mat );
 			m_pDevice->SetSamplerState( "Albedo", m_pDevice->GetDefaultSamplerState() );
 			m_pDevice->SetSamplerState( "Normal", m_pDevice->GetDefaultSamplerState() );
+			m_pDevice->SetSamplerState( "AmbientOcclusion", m_pDevice->GetDefaultSamplerState() );
 
 			m_pDevice->SetConstantBuffer( "ObjectCB", pModelCb );
 			m_pDevice->SetConstantBuffer( "PassCB", m_pMainPassCb );
@@ -657,9 +658,6 @@ namespace Artemis::Renderer::Techniques
 			for ( UINT j = 0; j < pModel->GetModel()->MeshCount; ++j )
 			{
 				const Artemis::Renderer::Assets::Mesh& rMesh = pModel->GetModel()->pMeshList[j];
-
-				//m_pDevice->SetTexture( "Albedo", rMesh.pTexture[ALBEDO] );
-				//m_pDevice->SetTexture( "Normal", rMesh.pTexture[NORMAL] );
 
 				Artemis::Renderer::Helpers::RenderMarker profile( _pGfxCmdList, "Mesh: %llu", j );
 				if ( m_pDevice->FlushState() )
