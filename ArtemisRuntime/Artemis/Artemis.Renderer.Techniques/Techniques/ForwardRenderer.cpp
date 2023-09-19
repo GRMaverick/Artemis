@@ -128,7 +128,7 @@ namespace Artemis::Renderer::Techniques
 		if ( !m_pDevice->CreateSwapChain( &m_pSwapChain, m_pGfxCmdQueue, _pWindow, BACK_BUFFERS, L"Swap Chain" ) )
 			return false;
 
-		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( std::string(CLParser::Instance()->GetArgument("data")) + std::string("Shaders\\*") );
+		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( std::string(CLParser::Instance()->GetArgument("data")) + std::string("\\Shaders\\*") );
 
 		if ( !m_pDevice->CreateDescriptorHeap( Interfaces::DescriptorHeapType_CbvSrvUav, &m_pImGuiSrvHeap, Interfaces::DescriptorHeapFlags_ShaderVisible, 1, L"ImGUI SRV" ) )
 			return false;
@@ -272,7 +272,7 @@ namespace Artemis::Renderer::Techniques
 				const rapidxml::xml_node<>* texture = textures->first_node("Texture");
 				while (texture != nullptr)
 				{
-					std::string strFilename = CLParser::Instance()->GetArgument("data") + std::string("Textures\\") + "\\" + std::string(texture->first_attribute("Path")->value());
+					std::string strFilename = CLParser::Instance()->GetArgument("data") + std::string("\\Textures\\") + "\\" + std::string(texture->first_attribute("Path")->value());
 					const std::wstring wstrFilename = std::wstring(strFilename.begin(), strFilename.end());
 					const char* ext = GetExtension(texture->first_attribute("Path")->value());
 
@@ -300,7 +300,7 @@ namespace Artemis::Renderer::Techniques
 			{
 				Artemis::Renderer::Assets::RenderEntity* pInstance = new Artemis::Renderer::Assets::RenderEntity();
 
-				const std::string pModelPath = CLParser::Instance()->GetArgument("data") + std::string("Models\\") + std::string(instance->first_attribute("ModelPath")->value());
+				const std::string pModelPath = CLParser::Instance()->GetArgument("data") + std::string("\\Models\\") + std::string(instance->first_attribute("ModelPath")->value());
 				pInstance->SetModelName(instance->first_attribute("ModelName")->value());
 				pInstance->LoadModelFromFile(pModelPath.c_str(), m_pDevice, pList);
 				pInstance->SetMaterial(instance->first_attribute("MaterialInstance")->value());
@@ -346,7 +346,7 @@ namespace Artemis::Renderer::Techniques
 		}
 
 		const std::string strScenePath = std::string(CLParser::Instance()->GetArgument("data")) +
-			std::string("Scenes\\") +
+			std::string("\\Scenes\\") +
 			std::string(CLParser::Instance()->GetArgument("scene"));
 		if ( !LoadScene(strScenePath))
 		{
@@ -360,13 +360,13 @@ namespace Artemis::Renderer::Techniques
 		return true;
 	}
 
-	float direction = 10.0;
+	float direction = 2;
 	void ForwardRenderer::Update( double _deltaTime )
 	{
 		UpdatePassConstants();
 
 		m_vpLights[0]->Position.x += direction * _deltaTime;
-		if (m_vpLights[0]->Position.x >= 5.0 || m_vpLights[0]->Position.x <= -5.0)
+		if (m_vpLights[0]->Position.x >= 2.0 || m_vpLights[0]->Position.x <= -2.0)
 		{
 			direction *= -1.0f;
 		}
