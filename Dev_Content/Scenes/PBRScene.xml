@@ -1,8 +1,8 @@
 <Root>
     <Cameras>
         <Camera Name="Main">
-            <Position X="0.0" Y="5.0" Z="5.0" />
-            <Target X="0.0" Y="0.0" Z="0.0" />
+            <Position X="-2.0" Y="1.5" Z="1.5" />
+            <Target X="-1.25" Y="0.0" Z="0.0" />
             <Up X="0.0" Y="1.0" Z="0.0" />
             <FOV Value="45" />
         </Camera>
@@ -12,7 +12,7 @@
             <Diffuse R="1.0" G="1.0" B="1.0" A="1.0" />
             <Ambient R="1.0" G="1.0" B="1.0" A="1.0"/>
             <Specular R="1.0" G="1.0" B="1.0" A="1.0" Power="0.0"/>
-            <Position X="0.0" Y="2" Z="0.0" />
+            <Position X="-1.890" Y="1.163" Z="-0.227" />
         </Light>
     </Lights>
     <MaterialInstances>
@@ -37,13 +37,14 @@
                 <Texture Register="AmbientOcclusion" Path="StorageContainer_Bravo\\storage-container2-ao.png" />
             </Textures>
         </MaterialInstance>
-        <MaterialInstance Name="StorageContainerBravo_Roughness" MaterialType="AlbedoPhongMetallic">
-            <Effect Name="AlbedoPhongNormalAOMetallic" />
+        <MaterialInstance Name="StorageContainerBravo_StandardPBR">
+            <Effect Name="StandardPBR" />
             <Textures>
                 <Texture Register="Albedo" Path="StorageContainer_Bravo\\storage-container2-albedo.png" />
                 <Texture Register="Normal" Path="StorageContainer_Bravo\\storage-container2-normal-dx.png" />
                 <Texture Register="AmbientOcclusion" Path="StorageContainer_Bravo\\storage-container2-ao.png" />
                 <Texture Register="Metalness" Path="StorageContainer_Bravo\\storage-container2-metallic.png" />
+                <Texture Register="Roughness" Path="StorageContainer_Bravo\\storage-container2-roughness.png" />
             </Textures>
         </MaterialInstance>        
     </MaterialInstances>
@@ -57,11 +58,11 @@
         <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_AO" MaterialInstance="StorageContainerBravo_AlbedoNormalAO">
             <Transform PosX="0" PosY="" PosZ="" Scale="1.0" />
         </Instance>
-        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_AO" MaterialInstance="StorageContainerBravo_AlbedoNormalAO">
+        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_StandardPBR" MaterialInstance="StorageContainerBravo_StandardPBR">
             <Transform PosX="-1.25" PosY="" PosZ="" Scale="1.0" />
         </Instance>
-        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_AO" MaterialInstance="StorageContainerBravo_AlbedoNormalAO">
+        <!-- <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_AO" MaterialInstance="StorageContainerBravo_AlbedoNormalAO">
             <Transform PosX="-2.5" PosY="" PosZ="" Scale="1.0" />
-        </Instance>
+        </Instance> -->
     </ModelInstances>
 </Root>

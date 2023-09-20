@@ -450,7 +450,7 @@ namespace Artemis::Renderer::Techniques
 
 		//ImGui_MainCamera();
 		//ImGui_Memory();
-		//ImGui_Lights();
+		ImGui_Lights();
 		//ImGui_Objects();
 		ImGui_DeviceStats();
 		ImGui_Shaders();
@@ -534,7 +534,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpLights[i]->Position.x;
 				v[1] = m_vpLights[i]->Position.y;
 				v[2] = m_vpLights[i]->Position.z;
-				if (ImGui::SliderFloat3("Position:", v, -180.0f, 180.0f))
+				if (ImGui::SliderFloat3("Position:", v, -10.0f, 10.0f))
 				{
 					m_vpLights[i]->Position.x = v[0];
 					m_vpLights[i]->Position.y = v[1];
@@ -692,6 +692,8 @@ namespace Artemis::Renderer::Techniques
 			m_pDevice->SetSamplerState( "Albedo", m_pDevice->GetDefaultSamplerState() );
 			m_pDevice->SetSamplerState( "Normal", m_pDevice->GetDefaultSamplerState() );
 			m_pDevice->SetSamplerState( "AmbientOcclusion", m_pDevice->GetDefaultSamplerState() );
+			m_pDevice->SetSamplerState( "Metalness", m_pDevice->GetDefaultSamplerState() );
+			m_pDevice->SetSamplerState( "Roughness", m_pDevice->GetDefaultSamplerState() );
 
 			m_pDevice->SetConstantBuffer( "ObjectCB", pModelCb );
 			m_pDevice->SetConstantBuffer( "PassCB", m_pMainPassCb );
