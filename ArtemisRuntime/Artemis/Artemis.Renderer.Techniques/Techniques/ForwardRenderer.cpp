@@ -1,4 +1,6 @@
 //#include "Defines.h"
+#define ARRAY_LENGTH(a) (sizeof(a) / sizeof(*(a)))
+
 #include "ForwardRenderer.h"
 
 #include <assert.h>
@@ -104,8 +106,8 @@ namespace Artemis::Renderer::Techniques
 		m_bNewModelsLoaded( false ),
 		m_pImGuiSrvHeap( nullptr ),
 		m_pLightsCb( nullptr ),
-		m_pMainPassCb( nullptr ),
-		m_pSpotlightCb( nullptr )
+		m_pMainPassCb( nullptr )//,
+		//m_pSpotlightCb( nullptr )
 	{
 		m_pSwapChain = nullptr;
 	}
@@ -219,11 +221,11 @@ namespace Artemis::Renderer::Techniques
 			const rapidxml::xml_node<>* light = lights->first_node("Light");
 			while (light != nullptr)
 			{
-				Light* pLight = new Light();
+				DirectionalLight* pLight = new DirectionalLight();
 				const rapidxml::xml_node<>* posNode = light->first_node("Position");
 				const rapidxml::xml_node<>* diffuse = light->first_node("Diffuse");
-				const rapidxml::xml_node<>* ambient = light->first_node("Ambient");
-				const rapidxml::xml_node<>* specular = light->first_node("Specular");
+				//const rapidxml::xml_node<>* ambient = light->first_node("Ambient");
+				//const rapidxml::xml_node<>* specular = light->first_node("Specular");
 
 				const float x = static_cast<float>(atof(posNode->first_attribute("X")->value()));
 				const float y = static_cast<float>(atof(posNode->first_attribute("Y")->value()));
@@ -236,20 +238,20 @@ namespace Artemis::Renderer::Techniques
 				float a = static_cast<float>(atof(diffuse->first_attribute("A")->value()));
 				pLight->Diffuse = Artemis::Maths::Vector4(r, g, b, a);
 
-				r = static_cast<float>(atof(ambient->first_attribute("R")->value()));
-				g = static_cast<float>(atof(ambient->first_attribute("G")->value()));
-				b = static_cast<float>(atof(ambient->first_attribute("B")->value()));
-				a = static_cast<float>(atof(ambient->first_attribute("A")->value()));
-				pLight->Ambient = Artemis::Maths::Vector4(r, g, b, a);
+				//r = static_cast<float>(atof(ambient->first_attribute("R")->value()));
+				//g = static_cast<float>(atof(ambient->first_attribute("G")->value()));
+				//b = static_cast<float>(atof(ambient->first_attribute("B")->value()));
+				//a = static_cast<float>(atof(ambient->first_attribute("A")->value()));
+				//pLight->Ambient = Artemis::Maths::Vector4(r, g, b, a);
 
-				r = static_cast<float>(atof(specular->first_attribute("R")->value()));
-				g = static_cast<float>(atof(specular->first_attribute("G")->value()));
-				b = static_cast<float>(atof(specular->first_attribute("B")->value()));
-				a = static_cast<float>(atof(specular->first_attribute("A")->value()));
-				pLight->Specular = Artemis::Maths::Vector4(r, g, b, a);
+				//r = static_cast<float>(atof(specular->first_attribute("R")->value()));
+				//g = static_cast<float>(atof(specular->first_attribute("G")->value()));
+				//b = static_cast<float>(atof(specular->first_attribute("B")->value()));
+				//a = static_cast<float>(atof(specular->first_attribute("A")->value()));
+				//pLight->Specular = Artemis::Maths::Vector4(r, g, b, a);
 
-				const float power = static_cast<float>(atof(specular->first_attribute("Power")->value()));
-				pLight->SpecularPower = power;
+				//const float power = static_cast<float>(atof(specular->first_attribute("Power")->value()));
+				//pLight->SpecularPower = power;
 
 				m_vpLights.push_back(pLight);
 
@@ -334,8 +336,8 @@ namespace Artemis::Renderer::Techniques
 		m_bNewModelsLoaded = true;
 
 		m_pMainPassCb  = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "PassCB", m_pDevice );
-		m_pLightsCb    = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "LightCB", m_pDevice );
-		m_pSpotlightCb = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "SpotlightCB", m_pDevice );
+		m_pLightsCb    = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "DirectionalLightCB", m_pDevice );
+		//m_pSpotlightCb = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "SpotlightCB", m_pDevice );
 
 		LogInfo( "Loading Models:" );
 
@@ -366,12 +368,6 @@ namespace Artemis::Renderer::Techniques
 	{
 		UpdatePassConstants();
 
-		//m_vpLights[0]->Position.x += direction * _deltaTime;
-		if (m_vpLights[0]->Position.x >= 2.0 || m_vpLights[0]->Position.x <= -2.0)
-		{
-			direction *= -1.0f;
-		}
-
 		for ( UINT i = 0; i < m_vpRenderEntities.size(); ++i )
 		{
 			m_vpRenderEntities[i]->Update();
@@ -397,11 +393,18 @@ namespace Artemis::Renderer::Techniques
 		if ( m_pMainPassCb )
 			bRet = m_pMainPassCb->UpdateValue( nullptr, &cbPass, sizeof( Pass ) );
 
-		if ( m_pLightsCb )
-			bRet = m_pLightsCb->UpdateValue( nullptr, m_vpLights[0], sizeof( Light ) );
-
-		if ( m_pSpotlightCb )
-			bRet = m_pSpotlightCb->UpdateValue( nullptr, nullptr, sizeof( Spotlight ) );
+		if (m_pLightsCb)
+		{
+			DirectionalLight* lights = new DirectionalLight[m_vpLights.size()];
+			for (int i = 0; i < m_vpLights.size(); ++i)
+			{
+				lights[i].Diffuse = m_vpLights[i]->Diffuse;
+				lights[i].Position = m_vpLights[i]->Position;
+			}
+			bRet = m_pLightsCb->UpdateValue(nullptr, lights, m_vpLights.size() * sizeof(DirectionalLight));
+		}
+		//if ( m_pSpotlightCb )
+		//	bRet = m_pSpotlightCb->UpdateValue( nullptr, nullptr, sizeof( Spotlight ) );
 	}
 
 	bool ForwardRenderer::Render( void )
@@ -534,7 +537,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpLights[i]->Position.x;
 				v[1] = m_vpLights[i]->Position.y;
 				v[2] = m_vpLights[i]->Position.z;
-				if (ImGui::SliderFloat3("Position:", v, -10.0f, 10.0f))
+				if (ImGui::SliderFloat3("Position:", v, -5.0, 5.0f))
 				{
 					m_vpLights[i]->Position.x = v[0];
 					m_vpLights[i]->Position.y = v[1];
@@ -551,31 +554,31 @@ namespace Artemis::Renderer::Techniques
 					m_vpLights[i]->Diffuse.z = v[2];
 				}
 
-				v[0] = m_vpLights[i]->Ambient.x;
-				v[1] = m_vpLights[i]->Ambient.y;
-				v[2] = m_vpLights[i]->Ambient.z;
-				if (ImGui::SliderFloat3("Ambient:", v, 0.0f, 1.0f))
-				{
-					m_vpLights[i]->Ambient.x = v[0];
-					m_vpLights[i]->Ambient.y = v[1];
-					m_vpLights[i]->Ambient.z = v[2];
-				}
+				//v[0] = m_vpLights[i]->Ambient.x;
+				//v[1] = m_vpLights[i]->Ambient.y;
+				//v[2] = m_vpLights[i]->Ambient.z;
+				//if (ImGui::SliderFloat3("Ambient:", v, 0.0f, 1.0f))
+				//{
+				//	m_vpLights[i]->Ambient.x = v[0];
+				//	m_vpLights[i]->Ambient.y = v[1];
+				//	m_vpLights[i]->Ambient.z = v[2];
+				//}
 
-				v[0] = m_vpLights[i]->Specular.x;
-				v[1] = m_vpLights[i]->Specular.y;
-				v[2] = m_vpLights[i]->Specular.z;
-				if (ImGui::SliderFloat3("Specular:", v, 0.0f, 1.0f))
-				{
-					m_vpLights[i]->Specular.x = v[0];
-					m_vpLights[i]->Specular.y = v[1];
-					m_vpLights[i]->Specular.z = v[2];
-				}
+				//v[0] = m_vpLights[i]->Specular.x;
+				//v[1] = m_vpLights[i]->Specular.y;
+				//v[2] = m_vpLights[i]->Specular.z;
+				//if (ImGui::SliderFloat3("Specular:", v, 0.0f, 1.0f))
+				//{
+				//	m_vpLights[i]->Specular.x = v[0];
+				//	m_vpLights[i]->Specular.y = v[1];
+				//	m_vpLights[i]->Specular.z = v[2];
+				//}
 
-				float nS = m_vpLights[i]->SpecularPower;
-				if (ImGui::SliderFloat("Specular Power:", &nS, 0.0f, 10.0f))
-				{
-					m_vpLights[i]->SpecularPower = nS;
-				}
+				//float nS = m_vpLights[i]->SpecularPower;
+				//if (ImGui::SliderFloat("Specular Power:", &nS, 0.0f, 10.0f))
+				//{
+				//	m_vpLights[i]->SpecularPower = nS;
+				//}
 			}
 
 			ImGui::End();
@@ -697,7 +700,7 @@ namespace Artemis::Renderer::Techniques
 
 			m_pDevice->SetConstantBuffer( "ObjectCB", pModelCb );
 			m_pDevice->SetConstantBuffer( "PassCB", m_pMainPassCb );
-			m_pDevice->SetConstantBuffer( "LightCB", m_pLightsCb );
+			m_pDevice->SetConstantBuffer( "DirectionalLightCB", m_pLightsCb );
 			//m_pDevice->SetConstantBuffer( "SpotlightCB", m_pSpotlightCb );s
 
 			for ( UINT j = 0; j < pModel->GetModel()->MeshCount; ++j )

@@ -11,23 +11,30 @@ struct Pass
 	Artemis::Maths::Vector3 EyePosition;
 };
 
-struct Light
+//struct Light
+//{
+//	Artemis::Maths::Vector4 Diffuse;
+//	Artemis::Maths::Vector4 Ambient;
+//	Artemis::Maths::Vector4 Specular;
+//	Artemis::Maths::Vector3 Position;
+//	float SpecularPower;
+//};
+
+struct DirectionalLight
 {
 	Artemis::Maths::Vector4 Diffuse;
-	Artemis::Maths::Vector4 Ambient;
-	Artemis::Maths::Vector4 Specular;
 	Artemis::Maths::Vector3 Position;
-	float SpecularPower;
+	float Padding;
 };
 
-struct Spotlight
-{
-	Light LightData;
-	
-	float Theta;
-	float Phi;
-	float Falloff;
-};
+//struct Spotlight
+//{
+//	Light LightData;
+//	
+//	float Theta;
+//	float Phi;
+//	float Falloff;
+//};
 
 struct Material
 {
