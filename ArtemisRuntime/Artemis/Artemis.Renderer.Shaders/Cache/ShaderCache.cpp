@@ -33,7 +33,7 @@ namespace Artemis::Renderer::Shaders
 
 		InitCompiler();
 
-		Load( _pShaderPaths.c_str() );
+		LoadCache( _pShaderPaths.c_str() );
 	}
 
 	ShaderCache::~ShaderCache( void )
@@ -51,7 +51,7 @@ namespace Artemis::Renderer::Shaders
 		m_pShaderCompiler = Artemis::Renderer::Device::Factories::ShaderCompilerFactory::Construct(Artemis::Utilities::CLParser::Instance()->HasArgument("dxc"));
 	}
 
-	bool ShaderCache::Load( const std::string& _strShadersPath )
+	bool ShaderCache::LoadCache( const std::string& _strShadersPath )
 	{
 		if ( !m_pShaderCompiler )
 		{
@@ -75,57 +75,18 @@ namespace Artemis::Renderer::Shaders
 
 			do
 			{
-				if ( strncmp( data.cFileName, ".", strlen( data.cFileName ) ) != 0 && strncmp( data.cFileName, "..", strlen( data.cFileName ) ) != 0 && (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY )
+				char* pFullFilepath = new char[strlen(pDirectoryNoWildcard) + strlen(data.cFileName) + 1];
+				snprintf(pFullFilepath, strlen(pDirectoryNoWildcard) + strlen(data.cFileName) + 1, "%s%s", pDirectoryNoWildcard, data.cFileName);
+
+				if ( strncmp( data.cFileName, ".", strlen( data.cFileName ) ) != 0 && 
+					strncmp( data.cFileName, "..", strlen( data.cFileName ) ) != 0 && 
+					(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY )
 				{
-					char* pFullFilepath = new char[strlen( pDirectoryNoWildcard ) + strlen( data.cFileName ) + 1];
-					snprintf( pFullFilepath, strlen( pDirectoryNoWildcard ) + strlen( data.cFileName ) + 1, "%s%s", pDirectoryNoWildcard, data.cFileName );
-
-					char pFullFullFileString[128];
-					GetFullPathNameA( pFullFilepath, ARRAYSIZE( pFullFullFileString ), pFullFullFileString, nullptr );
-
-					LogInfo( "\t- %s", pFullFullFileString );
-
-					const size_t namelength = strlen( data.cFileName ) - 2;
-					char*        pFilename  = new char[namelength];
-					snprintf( pFilename, namelength, "%s", data.cFileName );
-
-					char*         aError        = nullptr;
-					IShaderStage* pVertexShader = m_pShaderCompiler->Compile( pFullFilepath, "MainVS", aError );
-					if ( !pVertexShader )
-					{
-						LogError( "\t- %s failed to compile [Vertex Shader]", pFullFullFileString );
-						continue;
-					}
-
-					char pVShaderName[32] = {0};
-					snprintf( pVShaderName, ARRAYSIZE( pVShaderName ), "%s.vs", pFilename );
-					pVertexShader->SetName( pVShaderName );
-					m_pShaderCompiler->Reflect( pVertexShader );
-					DumpShader( pVertexShader );
-
-					IShaderStage* pPixelShader = m_pShaderCompiler->Compile( pFullFilepath, "MainPS", aError );
-					if ( !pPixelShader )
-					{
-						LogError( "\t- %s failed to compile [Pixel Shader]", pFullFullFileString );
-						continue;
-					}
-
-					char pPShaderName[32] = {0};
-					snprintf( pPShaderName, ARRAYSIZE( pPShaderName ), "%s.ps", pFilename );
-					pPixelShader->SetName( pPShaderName );
-					m_pShaderCompiler->Reflect( pPixelShader );
-					DumpShader( pPixelShader );
-
-                    ConstantTable::Instance()->CreateConstantBuffersEntries(pVertexShader->GetConstantParameters());
-                    ConstantTable::Instance()->CreateConstantBuffersEntries(pPixelShader->GetConstantParameters());
-
-					Effect effect = Effect( pVertexShader, pPixelShader );
-					effect.SetName( pFilename );
+					Effect* effect = LoadShader(pFullFilepath);
+					effect->SetName(data.cFileName);
+					effect->SetPath(pFullFilepath);
 
 					m_vLoadedEffect.push_back( effect );
-
-					delete[] pFilename;
-					delete[] pFullFilepath;
 				}
 			}
 			while ( FindNextFileA( hFind, &data ) );
@@ -136,6 +97,61 @@ namespace Artemis::Renderer::Shaders
 		}
 
 		return true;
+	}
+
+	Effect* ShaderCache::LoadShader(const char* _fileName)
+	{
+		char pFullFullFileString[128];
+		GetFullPathNameA(_fileName, ARRAYSIZE(pFullFullFileString), pFullFullFileString, nullptr);
+
+		LogInfo("\t- %s", pFullFullFileString);
+
+		IShaderStage* pVertexShader = LoadVertexShader(pFullFullFileString);
+		IShaderStage* pPixelShader = LoadPixelShader(pFullFullFileString);
+
+		return new Effect(pVertexShader, pPixelShader);
+	}
+
+	IShaderStage* ShaderCache::LoadVertexShader(const char* _fileName)
+	{
+		char* aError = nullptr;
+		IShaderStage* pVertexShader = m_pShaderCompiler->Compile(_fileName, "MainVS", aError);
+		if (!pVertexShader)
+		{
+			LogError("\t- %s failed to compile [Vertex Shader]", _fileName);
+			return nullptr;
+		}
+
+		char pVShaderName[128] = { 0 };
+		snprintf(pVShaderName, ARRAYSIZE(pVShaderName), "%s.vs", _fileName);
+		pVertexShader->SetName(pVShaderName);
+		m_pShaderCompiler->Reflect(pVertexShader);
+		DumpShader(pVertexShader);
+
+		ConstantTable::Instance()->CreateConstantBuffersEntries(pVertexShader->GetConstantParameters());
+
+		return pVertexShader;
+	}
+	
+	IShaderStage* ShaderCache::LoadPixelShader(const char* _fileName)
+	{
+		char* aError = nullptr;
+		IShaderStage* pPixelShader = m_pShaderCompiler->Compile(_fileName, "MainPS", aError);
+		if (!pPixelShader)
+		{
+			LogError("\t- %s failed to compile [Pixel Shader]", _fileName);
+			return nullptr;
+		}
+
+		char pPShaderName[128] = { 0 };
+		snprintf(pPShaderName, ARRAYSIZE(pPShaderName), "%s.ps", _fileName);
+		pPixelShader->SetName(pPShaderName);
+		m_pShaderCompiler->Reflect(pPixelShader);
+		DumpShader(pPixelShader);
+
+		ConstantTable::Instance()->CreateConstantBuffersEntries(pPixelShader->GetConstantParameters());
+
+		return pPixelShader;
 	}
 
 	void ShaderCache::DumpShader( IShaderStage* _pShader )
@@ -167,16 +183,36 @@ namespace Artemis::Renderer::Shaders
 #endif
 	}
 
-	Effect* ShaderCache::GetEffect( const char* _pName )
+	IEffect* ShaderCache::GetEffect( const char* _pName )
 	{
 		for ( size_t i = 0; i < m_vLoadedEffect.size(); ++i )
 		{
-			if ( strncmp( m_vLoadedEffect[i].GetName(), _pName, strlen( _pName ) ) == 0 )
+			if ( strncmp( m_vLoadedEffect[i]->GetName(), _pName, strlen( _pName ) ) == 0 )
 			{
-				return &m_vLoadedEffect[i];
+				return m_vLoadedEffect[i];
 			}
 		}
 		assert( "Effect does not exist" );
 		return nullptr;
+	}
+
+	bool ShaderCache::ReloadEffect(const char* _pName)
+	{
+		for (size_t i = 0; i	< m_vLoadedEffect.size(); ++i)
+		{
+			//if (strncmp(m_vLoadedEffect[i]->GetName(), _pName, strlen(_pName)) == 0)
+			if(strstr(m_vLoadedEffect[i]->GetName(), _pName))
+			{
+				IShaderStage* pVertexShader = LoadVertexShader(m_vLoadedEffect[i]->GetFilepath());
+				IShaderStage* pPixelShader = LoadPixelShader(m_vLoadedEffect[i]->GetFilepath());
+
+				m_vLoadedEffect[i]->SetVertexShader(pVertexShader);
+				m_vLoadedEffect[i]->SetPixelShader(pPixelShader);
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

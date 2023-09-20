@@ -105,6 +105,7 @@ float4 MainPS(VSOutput _input) : SV_TARGET
 	{
 		specular.rgb = specularAmount * (MaterialSpecular * LightSpecular).rgb;
 	}
-	
+
+    //return float4(1.0f, 0.0f, 0.0f, 0.0f); 
 	return clamp(texColor * (specular + (diffuse * diffuseAmount) + ambient), 0, 1);
 }

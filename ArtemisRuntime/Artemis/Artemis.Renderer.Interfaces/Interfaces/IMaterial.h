@@ -4,12 +4,11 @@
 
 namespace Artemis::Renderer::Interfaces
 {
-    class IShaderStage;
+    class IEffect;
 
     struct IMaterial
     {
-        IShaderStage* m_pVertexShader;
-        IShaderStage* m_pPixelShader;
+        IEffect* Effect;
 
         std::map<std::string, Artemis::Renderer::Interfaces::IGpuResource*> m_mapTextures;
     };

@@ -15,6 +15,7 @@
 #include "DepthBufferResourceDx12.h"
 #include "RenderTargetResourceDx12.h"
 
+#include "Interfaces/IEffect.h"
 #include "Interfaces/IShader.h"
 #include "Interfaces/IMaterial.h"
 
@@ -623,9 +624,10 @@ namespace Artemis::Renderer::Device::Dx12
 
 	bool DeviceDx12::SetMaterial( Interfaces::IMaterial* _pMaterial )
 	{
-		if ( _pMaterial->m_pVertexShader != m_DeviceState.GetShader( Interfaces::IShaderStage::ShaderType::EVertexShader ) || _pMaterial->m_pPixelShader != m_DeviceState.GetShader( Interfaces::IShaderStage::ShaderType::EPixelShader ) )
+		if ( _pMaterial->Effect->GetVertexShader() != m_DeviceState.GetShader( Interfaces::IShaderStage::ShaderType::EVertexShader ) ||
+			_pMaterial->Effect->GetPixelShader() != m_DeviceState.GetShader( Interfaces::IShaderStage::ShaderType::EPixelShader ) )
 		{
-			m_DeviceState.Reinitialise( _pMaterial->m_pVertexShader, _pMaterial->m_pPixelShader );
+			m_DeviceState.Reinitialise(_pMaterial->Effect->GetVertexShader(), _pMaterial->Effect->GetPixelShader());
 		}
 
 		for (auto iter = _pMaterial->m_mapTextures.begin(); iter != _pMaterial->m_mapTextures.end(); ++iter)

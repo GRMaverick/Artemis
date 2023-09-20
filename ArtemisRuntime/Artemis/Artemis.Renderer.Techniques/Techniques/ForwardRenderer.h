@@ -27,7 +27,7 @@ namespace Artemis::Core
 
 namespace Artemis::Renderer::Interfaces
 {
-	class IMaterial;
+	struct IMaterial;
 	class IGpuResource;
 	class IDescriptorHeap;
 	class ISwapChain;
@@ -86,6 +86,12 @@ namespace Artemis::Renderer::Techniques
 
 		void MainRenderPass( const Interfaces::ICommandList* _pGfxCmdList ) const;
 		void ImGuiPass( const Interfaces::ICommandList* _pGfxCmdList ) const;
+		void ImGui_MainCamera(void) const;
+		void ImGui_Memory(void) const;
+		void ImGui_Lights(void) const;
+		void ImGui_Objects(void) const;
+		void ImGui_DeviceStats(void) const;
+		void ImGui_Shaders(void) const;
 	};
 }
 
