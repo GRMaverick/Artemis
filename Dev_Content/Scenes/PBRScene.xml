@@ -8,11 +8,21 @@
         </Camera>
     </Camera>
     <Lights>
-        <Light Name="Main">
+        <Light Name="Alpha">
             <Diffuse R="1.0" G="1.0" B="1.0" A="1.0" />
-            <Ambient R="1.0" G="1.0" B="1.0" A="1.0"/>
-            <Specular R="1.0" G="1.0" B="1.0" A="1.0" Power="0.0"/>
-            <Position X="-1.890" Y="1.163" Z="-0.227" />
+            <Position X="2.0" Y="1.5" Z="2.0" />
+        </Light>
+        <Light Name="Bravo">
+            <Diffuse R="1.0" G="1.0" B="1.0" A="1.0" />
+            <Position X="-2.0" Y="1.5" Z="-2.0" />
+        </Light>
+        <Light Name="Charlie">
+            <Diffuse R="1.0" G="1.0" B="1.0" A="1.0" />
+            <Position X="2.0" Y="1.5" Z="-2.0" />
+        </Light>
+        <Light Name="Delta">
+            <Diffuse R="1.0" G="1.0" B="1.0" A="1.0" />
+            <Position X="-2.0" Y="1.5" Z="2.0" />
         </Light>
     </Lights>
     <MaterialInstances>
@@ -49,7 +59,7 @@
         </MaterialInstance>        
     </MaterialInstances>
     <ModelInstances>
-        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_Albedo" MaterialInstance="StorageContainerBravo_Albedo">
+        <!-- <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_Albedo" MaterialInstance="StorageContainerBravo_Albedo">
             <Transform PosX="2.5" PosY="" PosZ="" Scale="1.0" />
         </Instance>
         <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal" MaterialInstance="StorageContainerBravo_AlbedoNormal">
@@ -57,7 +67,7 @@
         </Instance>
         <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_AO" MaterialInstance="StorageContainerBravo_AlbedoNormalAO">
             <Transform PosX="0" PosY="" PosZ="" Scale="1.0" />
-        </Instance>
+        </Instance> -->
         <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_StandardPBR" MaterialInstance="StorageContainerBravo_StandardPBR">
             <Transform PosX="-1.25" PosY="" PosZ="" Scale="1.0" />
         </Instance>

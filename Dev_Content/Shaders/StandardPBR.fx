@@ -36,27 +36,19 @@ cbuffer ObjectCB : register(b1)
     float4x4 World;
 };
 
-cbuffer LightCB : register(b2)
+struct DirectionalLight
 {
-    float4 LightDiffuse;
-    float4 LightAmbient;
-    float4 LightSpecular;
-    float3 LightPosition;
-    float LightSpecularPower;
+    float4 Diffuse;
+    
+    float3 Position;
+    float Padding;
 };
 
-//cbuffer SpotlightCB : register(b3)
-//{
-//    float4 SpotlightDiffuse;
-//    float4 SpotlightAmbient;
-//    float4 SpotlightSpecular;
-//    float3 SpotlightPosition;
-//    float SpotlightSpecularPower;
-
-//    float SpotlightTheta;
-//    float SpotlightPhi;
-//    float SpotlightFalloff;
-//};
+static const int LightCount = 4;
+cbuffer DirectionalLightCB : register(b2)
+{
+    DirectionalLight DirectionalLightData[LightCount];
+};
 
 //
 // Entry Point
@@ -178,14 +170,14 @@ float4 MainPS(VSOutput _input) : SV_TARGET
     f0 = lerp(f0, albedoSample, metalnessSample);
     
     float3 Lo = float3(0.0f, 0.0f, 0.0f);
-    //for (int i = 0; i < 1; ++i) // TODO: Loop on Lights.
-    //{
-        float3 lightDirection = normalize(LightPosition - _input.PosW);
+    for (int i = 0; i < LightCount; ++i) // TODO: Loop on Lights.
+    {
+        float3 lightDirection = normalize(DirectionalLightData[i].Position - _input.PosW);
         float3 halfVector = normalize(viewDirection + lightDirection);
         
-        float distance = length(LightPosition - _input.PosW);
+        float distance = length(DirectionalLightData[i].Position - _input.PosW);
         float attenuation = 1.0f / (distance * distance);
-        float3 radiance = LightAmbient * attenuation;
+        float3 radiance = DirectionalLightData[i].Diffuse * attenuation;
         
         float D = NormalDistributionFunction_GGXTR(normal, halfVector, roughnessSample.x);
         float F = Fresnel_FresnelSchlick(normal, halfVector, viewDirection, f0);
@@ -200,7 +192,7 @@ float4 MainPS(VSOutput _input) : SV_TARGET
         
         float nDotL = max(dot(normal, lightDirection), 0.0f);
         Lo += (kD * albedoSample.xyz / XM_PI + specular) * radiance * nDotL;
-    //}
+    }
     
     float3 ambient = aoSample.xyz * albedoSample.xyz * float3(0.03f, 0.03f, 0.03f); // Why the float3?
     

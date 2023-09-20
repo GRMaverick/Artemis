@@ -36,8 +36,8 @@ namespace Artemis::Renderer::Interfaces
 	class IGraphicsDevice;
 }
 
-struct Light;
-struct Spotlight;
+struct DirectionalLight;
+//struct Spotlight;
 
 namespace Artemis::Renderer::Techniques
 {
@@ -72,9 +72,9 @@ namespace Artemis::Renderer::Techniques
 
 		Interfaces::IGpuResource* m_pLightsCb;
 		Interfaces::IGpuResource* m_pMainPassCb;
-		Interfaces::IGpuResource* m_pSpotlightCb;
+		//Interfaces::IGpuResource* m_pSpotlightCb;
 
-		std::vector<Light*>														m_vpLights;
+		std::vector<DirectionalLight*>											m_vpLights;
 		std::vector<Artemis::Renderer::Assets::Camera*>							m_vpCameras;
 		std::vector<Artemis::Renderer::Assets::RenderEntity*>					m_vpRenderEntities;
 		std::map<std::string, Artemis::Renderer::Interfaces::IMaterial*>		m_mapMaterials;
