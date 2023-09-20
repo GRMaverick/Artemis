@@ -143,6 +143,7 @@
     <ClInclude Include="Interfaces\ICommandQueue.h" />
     <ClInclude Include="Interfaces\IConstantBufferParameters.h" />
     <ClInclude Include="Interfaces\IDescriptorHeap.h" />
+    <ClInclude Include="Interfaces\IEffect.h" />
     <ClInclude Include="Interfaces\IGraphicsDevice.h" />
     <ClInclude Include="Interfaces\IMaterial.h" />
     <ClInclude Include="Interfaces\IRenderer.h" />

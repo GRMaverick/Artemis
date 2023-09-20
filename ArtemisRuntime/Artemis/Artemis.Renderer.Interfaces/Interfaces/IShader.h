@@ -60,7 +60,7 @@ namespace Artemis::Renderer::Interfaces
 
 	protected:
 		ShaderType m_stType;
-		char       m_pShaderName[50]    = {};
+		char       m_pShaderName[128]    = {};
 		void*      m_pShaderBytecode    = nullptr;
 		size_t     m_ShaderBytecodeSize = 0;
 

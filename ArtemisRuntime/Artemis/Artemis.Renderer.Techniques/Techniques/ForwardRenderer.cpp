@@ -26,6 +26,7 @@
 #include "Scene/Camera.h"
 #include "Scene/RenderEntity.h"
 
+#include "Cache/Effect.h"
 #include "Cache/ShaderCache.h"
 #include "Constants/ConstantTable.h"
 
@@ -44,6 +45,7 @@ using namespace Artemis::Core;
 using namespace Artemis::Maths;
 using namespace Artemis::Memory;
 using namespace Artemis::Utilities;
+using namespace Artemis::Renderer::Shaders;
 using namespace Artemis::Renderer::Interfaces;
 
 #define PRAGMA_TODO(todo)	__pragma(message("[TODO]: "todo));
@@ -128,7 +130,7 @@ namespace Artemis::Renderer::Techniques
 		if ( !m_pDevice->CreateSwapChain( &m_pSwapChain, m_pGfxCmdQueue, _pWindow, BACK_BUFFERS, L"Swap Chain" ) )
 			return false;
 
-		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( std::string(CLParser::Instance()->GetArgument("data")) + std::string("\\Shaders\\*") );
+		Artemis::Renderer::Shaders::ShaderCache::Instance()->LoadCache( std::string(CLParser::Instance()->GetArgument("data")) + std::string("\\Shaders\\*") );
 
 		if ( !m_pDevice->CreateDescriptorHeap( Interfaces::DescriptorHeapType_CbvSrvUav, &m_pImGuiSrvHeap, Interfaces::DescriptorHeapFlags_ShaderVisible, 1, L"ImGUI SRV" ) )
 			return false;
@@ -262,11 +264,10 @@ namespace Artemis::Renderer::Techniques
 			const rapidxml::xml_node<>* matInstance = matInstances->first_node("MaterialInstance");
 			while (matInstance != nullptr)
 			{				
-				Artemis::Renderer::Shaders::Effect* effect = Artemis::Renderer::Shaders::ShaderCache::Instance()->GetEffect(matInstance->first_node("Effect")->first_attribute("Name")->value());
+				Artemis::Renderer::Interfaces::IEffect* effect = Artemis::Renderer::Shaders::ShaderCache::Instance()->GetEffect(matInstance->first_node("Effect")->first_attribute("Name")->value());
 
 				Artemis::Renderer::Interfaces::IMaterial* mat = new Artemis::Renderer::Interfaces::IMaterial();
-				mat->m_pVertexShader = effect->GetVertexShader();
-				mat->m_pPixelShader = effect->GetPixelShader();
+				mat->Effect = effect;
 
 				const rapidxml::xml_node<>* textures = matInstance->first_node("Textures");
 				const rapidxml::xml_node<>* texture = textures->first_node("Texture");
@@ -365,7 +366,7 @@ namespace Artemis::Renderer::Techniques
 	{
 		UpdatePassConstants();
 
-		m_vpLights[0]->Position.x += direction * _deltaTime;
+		//m_vpLights[0]->Position.x += direction * _deltaTime;
 		if (m_vpLights[0]->Position.x >= 2.0 || m_vpLights[0]->Position.x <= -2.0)
 		{
 			direction *= -1.0f;
@@ -447,72 +448,93 @@ namespace Artemis::Renderer::Techniques
 
 		ImGUIEngine::Begin();
 
-		if ( ImGui::Begin( "Main Camera" ) )
+		//ImGui_MainCamera();
+		//ImGui_Memory();
+		//ImGui_Lights();
+		//ImGui_Objects();
+		ImGui_DeviceStats();
+		ImGui_Shaders();
+
+
+		ImGUIEngine::End();
+		ImGUIEngine::Draw( _pGfxCmdList );
+#endif
+	}
+
+	void ForwardRenderer::ImGui_MainCamera(void) const
+	{
+		if (ImGui::Begin("Main Camera"))
 		{
-			for ( unsigned int i = 0; i < m_vpCameras.size(); ++i )
+			for (unsigned int i = 0; i < m_vpCameras.size(); ++i)
 			{
 				float v[3];
 				v[0] = m_vpCameras[i]->GetPosition().x;
 				v[1] = m_vpCameras[i]->GetPosition().y;
 				v[2] = m_vpCameras[i]->GetPosition().z;
 
-				if ( ImGui::SliderFloat3( "Position:", v, -10.0f, 10.0f ) )
+				if (ImGui::SliderFloat3("Position:", v, -10.0f, 10.0f))
 				{
-					m_vpCameras[i]->SetPosition( v[0], v[1], v[2] );
+					m_vpCameras[i]->SetPosition(v[0], v[1], v[2]);
 				}
 
 				v[0] = m_vpCameras[i]->GetTarget().x;
 				v[1] = m_vpCameras[i]->GetTarget().y;
 				v[2] = m_vpCameras[i]->GetTarget().z;
-				if ( ImGui::SliderFloat3( "Target:", v, -10.0f, 10.0f) )
+				if (ImGui::SliderFloat3("Target:", v, -10.0f, 10.0f))
 				{
-					m_vpCameras[i]->SetTarget( v[0], v[1], v[2] );
+					m_vpCameras[i]->SetTarget(v[0], v[1], v[2]);
 				}
 
 				v[0] = m_vpCameras[i]->GetUp().x;
 				v[1] = m_vpCameras[i]->GetUp().y;
 				v[2] = m_vpCameras[i]->GetUp().z;
-				if ( ImGui::SliderFloat3( "Up:", v, -10.0f, 10.0f ) )
+				if (ImGui::SliderFloat3("Up:", v, -10.0f, 10.0f))
 				{
-					m_vpCameras[i]->SetUp( v[0], v[1], v[2] );
+					m_vpCameras[i]->SetUp(v[0], v[1], v[2]);
 				}
 			}
 			ImGui::End();
 		}
+	}
 
-		if ( ImGui::Begin( "Memory" ) )
+	void ForwardRenderer::ImGui_Memory(void) const
+	{
+		if (ImGui::Begin("Memory"))
 		{
-			static constexpr float kMb               = 1024 * 1024;
-			float                  fTotalMemUsage    = 0.0f;
+			static constexpr float kMb = 1024 * 1024;
+			float                  fTotalMemUsage = 0.0f;
 			int                    iTotalAllocations = 0;
-			for ( unsigned int i = 0; i < static_cast<unsigned int>(MemoryContextCategory::ECategories); ++i )
+			for (unsigned int i = 0; i < static_cast<unsigned int>(MemoryContextCategory::ECategories); ++i)
 			{
-				const char*              pCatName = MemoryGlobalTracking::GetContextName( static_cast<MemoryContextCategory>(i) );
-				const MemoryContextData& data     = MemoryGlobalTracking::GetContextStats( static_cast<MemoryContextCategory>(i) );
+				const char* pCatName = MemoryGlobalTracking::GetContextName(static_cast<MemoryContextCategory>(i));
+				const MemoryContextData& data = MemoryGlobalTracking::GetContextStats(static_cast<MemoryContextCategory>(i));
 
 				const int iNetAllocations = data.Allocations - data.Deallocations;
-				ImGui::CollapsingHeader( pCatName, ImGuiTreeNodeFlags_Bullet );
-				ImGui::Text( "Net Allocations: %i", iNetAllocations );
-				ImGui::Text( "Allocated Size: %0.3f MB", data.TotalAllocationSize / kMb );
+				ImGui::CollapsingHeader(pCatName, ImGuiTreeNodeFlags_Bullet);
+				ImGui::Text("Net Allocations: %i", iNetAllocations);
+				ImGui::Text("Allocated Size: %0.3f MB", data.TotalAllocationSize / kMb);
 
 				fTotalMemUsage += data.TotalAllocationSize;
 				iTotalAllocations += iNetAllocations;
 			}
-			ImGui::CollapsingHeader( "Total Memory Usage:", ImGuiTreeNodeFlags_Bullet );
-			ImGui::Text( "Size Allocation: %0.3f MB", fTotalMemUsage / kMb );
-			ImGui::Text( "Net Allocations: %i", iTotalAllocations );
+			ImGui::CollapsingHeader("Total Memory Usage:", ImGuiTreeNodeFlags_Bullet);
+			ImGui::Text("Size Allocation: %0.3f MB", fTotalMemUsage / kMb);
+			ImGui::Text("Net Allocations: %i", iTotalAllocations);
 			ImGui::End();
 		}
+	}
 
-		if ( ImGui::Begin( "Lights" ) )
+	void ForwardRenderer::ImGui_Lights(void) const
+	{
+		if (ImGui::Begin("Lights"))
 		{
-			for ( unsigned int i = 0; i < m_vpLights.size(); ++i )
+			for (unsigned int i = 0; i < m_vpLights.size(); ++i)
 			{
 				float v[3];
 				v[0] = m_vpLights[i]->Position.x;
 				v[1] = m_vpLights[i]->Position.y;
 				v[2] = m_vpLights[i]->Position.z;
-				if ( ImGui::SliderFloat3( "Position:", v, -180.0f, 180.0f ) )
+				if (ImGui::SliderFloat3("Position:", v, -180.0f, 180.0f))
 				{
 					m_vpLights[i]->Position.x = v[0];
 					m_vpLights[i]->Position.y = v[1];
@@ -522,7 +544,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpLights[i]->Diffuse.x;
 				v[1] = m_vpLights[i]->Diffuse.y;
 				v[2] = m_vpLights[i]->Diffuse.z;
-				if ( ImGui::SliderFloat3( "Diffuse:", v, 0.0f, 1.0f ) )
+				if (ImGui::SliderFloat3("Diffuse:", v, 0.0f, 1.0f))
 				{
 					m_vpLights[i]->Diffuse.x = v[0];
 					m_vpLights[i]->Diffuse.y = v[1];
@@ -532,7 +554,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpLights[i]->Ambient.x;
 				v[1] = m_vpLights[i]->Ambient.y;
 				v[2] = m_vpLights[i]->Ambient.z;
-				if ( ImGui::SliderFloat3( "Ambient:", v, 0.0f, 1.0f ) )
+				if (ImGui::SliderFloat3("Ambient:", v, 0.0f, 1.0f))
 				{
 					m_vpLights[i]->Ambient.x = v[0];
 					m_vpLights[i]->Ambient.y = v[1];
@@ -542,7 +564,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpLights[i]->Specular.x;
 				v[1] = m_vpLights[i]->Specular.y;
 				v[2] = m_vpLights[i]->Specular.z;
-				if ( ImGui::SliderFloat3( "Specular:", v, 0.0f, 1.0f ) )
+				if (ImGui::SliderFloat3("Specular:", v, 0.0f, 1.0f))
 				{
 					m_vpLights[i]->Specular.x = v[0];
 					m_vpLights[i]->Specular.y = v[1];
@@ -550,7 +572,7 @@ namespace Artemis::Renderer::Techniques
 				}
 
 				float nS = m_vpLights[i]->SpecularPower;
-				if ( ImGui::SliderFloat( "Specular Power:", &nS, 0.0f, 10.0f ) )
+				if (ImGui::SliderFloat("Specular Power:", &nS, 0.0f, 10.0f))
 				{
 					m_vpLights[i]->SpecularPower = nS;
 				}
@@ -558,33 +580,23 @@ namespace Artemis::Renderer::Techniques
 
 			ImGui::End();
 		}
+	}
 
-		if ( ImGui::Begin( "Device Flush State Stats:" ) )
-		{
-			const Artemis::Renderer::Interfaces::DeviceStateStats stats = m_pDevice->GetDeviceStats();
-			ImGui::Text( "Texture Updates: %lu", stats.TextureUpdates );
-			ImGui::Text( "Shader Updates: %lu", stats.ShaderUpdates );
-			ImGui::Text( "Render Target Updates: %lu", stats.RenderTargetUpdates );
-			ImGui::Text( "Depth Buffer Updates: %lu", stats.DepthBufferUpdates );
-			ImGui::Text( "Constant Buffer Updates: %lu", stats.ConstantBufferUpdates );
-			ImGui::Text( "Pipeline State Updates: %lu", stats.PipelineStateUpdates );
-			ImGui::Text( "Root Signature Updates: %lu", stats.RootSignatureUpdates );
-			ImGui::End();
-		}
-
-		if ( ImGui::Begin( "Objects:" ) )
+	void ForwardRenderer::ImGui_Objects(void) const
+	{
+		if (ImGui::Begin("Objects:"))
 		{
 			float v[3];
-			for ( unsigned int i = 0; i < m_vpRenderEntities.size(); ++i )
+			for (unsigned int i = 0; i < m_vpRenderEntities.size(); ++i)
 			{
-				if ( ImGui::CollapsingHeader( m_vpRenderEntities[i]->GetModelName() ) )
+				if (ImGui::CollapsingHeader(m_vpRenderEntities[i]->GetModelName()))
 				{
 					Material material = m_vpRenderEntities[i]->GetMaterialData();
 
 					v[0] = material.Diffuse.x;
 					v[1] = material.Diffuse.y;
 					v[2] = material.Diffuse.z;
-					if ( ImGui::SliderFloat3( "Diffuse:", v, 0.0f, 1.0f ) )
+					if (ImGui::SliderFloat3("Diffuse:", v, 0.0f, 1.0f))
 					{
 						material.Diffuse.x = v[0];
 						material.Diffuse.y = v[1];
@@ -594,7 +606,7 @@ namespace Artemis::Renderer::Techniques
 					v[0] = material.Ambient.x;
 					v[1] = material.Ambient.y;
 					v[2] = material.Ambient.z;
-					if ( ImGui::SliderFloat3( "Ambient:", v, 0.0f, 1.0f ) )
+					if (ImGui::SliderFloat3("Ambient:", v, 0.0f, 1.0f))
 					{
 						material.Ambient.x = v[0];
 						material.Ambient.y = v[1];
@@ -604,22 +616,53 @@ namespace Artemis::Renderer::Techniques
 					v[0] = material.Specular.x;
 					v[1] = material.Specular.y;
 					v[2] = material.Specular.z;
-					if ( ImGui::SliderFloat3( "Specular:", v, 0.0f, 1.0f ) )
+					if (ImGui::SliderFloat3("Specular:", v, 0.0f, 1.0f))
 					{
 						material.Specular.x = v[0];
 						material.Specular.y = v[1];
 						material.Specular.z = v[2];
 					}
 
-					m_vpRenderEntities[i]->SetMaterialData( material );
+					m_vpRenderEntities[i]->SetMaterialData(material);
 				}
 			}
 			ImGui::End();
 		}
+	}
 
-		ImGUIEngine::End();
-		ImGUIEngine::Draw( _pGfxCmdList );
-#endif
+	void ForwardRenderer::ImGui_DeviceStats(void) const
+	{
+		if (ImGui::Begin("Device Flush State Stats:"))
+		{
+			const Artemis::Renderer::Interfaces::DeviceStateStats stats = m_pDevice->GetDeviceStats();
+			ImGui::Text("Texture Updates: %lu", stats.TextureUpdates);
+			ImGui::Text("Shader Updates: %lu", stats.ShaderUpdates);
+			ImGui::Text("Render Target Updates: %lu", stats.RenderTargetUpdates);
+			ImGui::Text("Depth Buffer Updates: %lu", stats.DepthBufferUpdates);
+			ImGui::Text("Constant Buffer Updates: %lu", stats.ConstantBufferUpdates);
+			ImGui::Text("Pipeline State Updates: %lu", stats.PipelineStateUpdates);
+			ImGui::Text("Root Signature Updates: %lu", stats.RootSignatureUpdates);
+			ImGui::End();
+		}
+	}
+
+	void ForwardRenderer::ImGui_Shaders(void) const
+	{
+		if (ImGui::Begin("Shader Cache", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			const std::vector<IEffect*>* effects = Shaders::ShaderCache::Instance()->GetLoadedEffects();
+			for(int i = 0; i < effects->size(); ++i)
+			{
+				IEffect* effect = effects->at(i);
+
+				if (ImGui::Button(effect->GetName(), ImVec2(250, 25)))
+				{
+					Shaders::ShaderCache::Instance()->ReloadEffect(effect->GetName());
+				}
+				ImGui::NewLine();
+			}
+			ImGui::End();
+		}
 	}
 
 	void ForwardRenderer::MainRenderPass( const Interfaces::ICommandList* _pGfxCmdList ) const

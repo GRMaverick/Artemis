@@ -8,6 +8,7 @@
 
 namespace Artemis::Renderer::Interfaces
 {
+	class IEffect;
 	class IShaderStage;
 	class IShaderCompiler;
 }
@@ -30,16 +31,23 @@ namespace Artemis::Renderer::Shaders
 		static ShaderCache* Instance( void );
 
 		void InitCompiler( void );
-		bool Load( const std::string& _pCachePath );
+		bool LoadCache( const std::string& _pCachePath );
 
-		Effect* GetEffect( const char* _pName );
+		Interfaces::IEffect* GetEffect( const char* _pName );
+		bool ReloadEffect(const char* _pName);
+
+		const std::vector<Interfaces::IEffect*>* GetLoadedEffects(void) { return &m_vLoadedEffect; }
 
 	private:
 		ShaderCache( void );
 		explicit ShaderCache( const std::string& _pShadersPath );
 
 		Interfaces::IShaderCompiler* m_pShaderCompiler;
-		std::vector<Effect>          m_vLoadedEffect;
+		std::vector<Interfaces::IEffect*>          m_vLoadedEffect;
+
+		Effect* LoadShader(const char* _fileName);
+		Interfaces::IShaderStage* LoadVertexShader(const char* _fileName);
+		Interfaces::IShaderStage* LoadPixelShader(const char* _fileName);
 
 		static void DumpShader( Interfaces::IShaderStage* _pShader );
 	};
