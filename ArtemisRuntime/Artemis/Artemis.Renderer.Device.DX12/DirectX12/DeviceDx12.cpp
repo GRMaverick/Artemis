@@ -628,6 +628,11 @@ namespace Artemis::Renderer::Device::Dx12
 			m_DeviceState.Reinitialise( _pMaterial->m_pVertexShader, _pMaterial->m_pPixelShader );
 		}
 
+		for (auto iter = _pMaterial->m_mapTextures.begin(); iter != _pMaterial->m_mapTextures.end(); ++iter)
+		{
+			SetTexture(iter->first.c_str(), iter->second);
+		}
+
 		return true;
 	}
 

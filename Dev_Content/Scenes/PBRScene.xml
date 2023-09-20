@@ -1,0 +1,52 @@
+<Root>
+    <Cameras>
+        <Camera Name="Main">
+            <Position X="0.0" Y="5.0" Z="5.0" />
+            <Target X="0.0" Y="0.0" Z="0.0" />
+            <Up X="0.0" Y="1.0" Z="0.0" />
+            <FOV Value="45" />
+        </Camera>
+    </Camera>
+    <Lights>
+        <Light Name="Main">
+            <Diffuse R="1.0" G="1.0" B="1.0" A="1.0" />
+            <Ambient R="1.0" G="1.0" B="1.0" A="1.0"/>
+            <Specular R="1.0" G="1.0" B="1.0" A="1.0" Power="0.0"/>
+            <Position X="0.0" Y="2" Z="0.0" />
+        </Light>
+    </Lights>
+    <MaterialInstances>
+        <MaterialInstance Name="StorageContainerBravo_Albedo" MaterialType="AlbedoPhong">
+            <Effect Name="AlbedoPhong" />
+            <Textures>
+                <Texture Register="Albedo" Path="StorageContainer_Bravo\\storage-container2-albedo.png" />
+            </Textures>
+        </MaterialInstance>
+        <MaterialInstance Name="StorageContainerBravo_AlbedoNormal" MaterialType="AlbedoPhongNormal">
+            <Effect Name="AlbedoPhongNormal" />
+            <Textures>
+                <Texture Register="Albedo" Path="StorageContainer_Bravo\\storage-container2-albedo.png" />
+                <Texture Register="Normal" Path="StorageContainer_Bravo\\storage-container2-normal-dx.png" />
+            </Textures>
+        </MaterialInstance>
+                <MaterialInstance Name="StorageContainerBravo_AlbedoNormalAO" MaterialType="AlbedoPhongNormalAO">
+            <Effect Name="AlbedoPhongNormalAO" />
+            <Textures>
+                <Texture Register="Albedo" Path="StorageContainer_Bravo\\storage-container2-albedo.png" />
+                <Texture Register="Normal" Path="StorageContainer_Bravo\\storage-container2-normal-dx.png" />
+                <Texture Register="AmbientOcclusion" Path="StorageContainer_Bravo\\storage-container2-ao.png" />
+            </Textures>
+        </MaterialInstance>
+    </MaterialInstances>
+    <ModelInstances>
+        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_Albedo" MaterialInstance="StorageContainerBravo_Albedo">
+            <Transform PosX="0" PosY="" PosZ="" Scale="1.0" />
+        </Instance>
+        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal" MaterialInstance="StorageContainerBravo_AlbedoNormal">
+            <Transform PosX="1.1" PosY="" PosZ="" Scale="1.0" />
+        </Instance>
+        <Instance ModelPath="StorageContainer\Cube.obj" ModelName="StorageContainerBravo_AlbedoNormal_AO" MaterialInstance="StorageContainerBravo_AlbedoNormalAO">
+            <Transform PosX="-1.1" PosY="" PosZ="" Scale="1.0" />
+        </Instance>
+    </ModelInstances>
+</Root>

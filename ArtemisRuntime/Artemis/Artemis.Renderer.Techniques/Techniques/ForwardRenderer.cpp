@@ -13,6 +13,7 @@
 #include "Interfaces/ICommandList.h"
 #include "Interfaces/IBufferResource.h"
 #include "Interfaces/IMaterial.h"
+#include "Interfaces/IBufferResource.h"
 
 #include "Loaders/CLParser.h"
 
@@ -43,6 +44,7 @@ using namespace Artemis::Core;
 using namespace Artemis::Maths;
 using namespace Artemis::Memory;
 using namespace Artemis::Utilities;
+using namespace Artemis::Renderer::Interfaces;
 
 #define PRAGMA_TODO(todo)	__pragma(message("[TODO]: "todo));
 #define BACK_BUFFERS 2
@@ -126,7 +128,7 @@ namespace Artemis::Renderer::Techniques
 		if ( !m_pDevice->CreateSwapChain( &m_pSwapChain, m_pGfxCmdQueue, _pWindow, BACK_BUFFERS, L"Swap Chain" ) )
 			return false;
 
-		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( std::string(CLParser::Instance()->GetArgument("data")) + std::string("Shaders\\*") );
+		Artemis::Renderer::Shaders::ShaderCache::Instance()->Load( std::string(CLParser::Instance()->GetArgument("data")) + std::string("\\Shaders\\*") );
 
 		if ( !m_pDevice->CreateDescriptorHeap( Interfaces::DescriptorHeapType_CbvSrvUav, &m_pImGuiSrvHeap, Interfaces::DescriptorHeapFlags_ShaderVisible, 1, L"ImGUI SRV" ) )
 			return false;
@@ -147,6 +149,24 @@ namespace Artemis::Renderer::Techniques
 		float       Position[3]  = {0};
 		float       Scale        = 1.0f;
 	};
+	
+	const char* GetExtension(const char* _pFilename)
+	{
+		size_t       extensionStart = 0;
+		const size_t size = strlen(_pFilename);
+		for (size_t i = size - 1; i >= 0; --i)
+		{
+			if (_pFilename[i] == '.')
+			{
+				extensionStart = i + 1;
+				break;
+			}
+		}
+
+		char* ext = new char[5];
+		snprintf(ext, 5, "%s", &_pFilename[extensionStart]);
+		return ext;
+	}
 
 	bool ForwardRenderer::LoadScene( const std::string& _sceneFile )
 	{
@@ -238,16 +258,52 @@ namespace Artemis::Renderer::Techniques
 			m_pDevice->CreateCommandList(Interfaces::ECommandListType::CommandListType_Copy, &pList, L"CpyList");
 			pList->Reset();
 
+			const rapidxml::xml_node<>* matInstances = root->first_node("MaterialInstances");
+			const rapidxml::xml_node<>* matInstance = matInstances->first_node("MaterialInstance");
+			while (matInstance != nullptr)
+			{				
+				Artemis::Renderer::Shaders::Effect* effect = Artemis::Renderer::Shaders::ShaderCache::Instance()->GetEffect(matInstance->first_node("Effect")->first_attribute("Name")->value());
+
+				Artemis::Renderer::Interfaces::IMaterial* mat = new Artemis::Renderer::Interfaces::IMaterial();
+				mat->m_pVertexShader = effect->GetVertexShader();
+				mat->m_pPixelShader = effect->GetPixelShader();
+
+				const rapidxml::xml_node<>* textures = matInstance->first_node("Textures");
+				const rapidxml::xml_node<>* texture = textures->first_node("Texture");
+				while (texture != nullptr)
+				{
+					std::string strFilename = CLParser::Instance()->GetArgument("data") + std::string("\\Textures\\") + "\\" + std::string(texture->first_attribute("Path")->value());
+					const std::wstring wstrFilename = std::wstring(strFilename.begin(), strFilename.end());
+					const char* ext = GetExtension(texture->first_attribute("Path")->value());
+
+					IGpuResource* pTexture = nullptr;
+					if (strncmp(ext, "dds", 3) == 0)
+					{
+						pTexture = m_pDevice->CreateTexture2D(wstrFilename.c_str(), pList, wstrFilename.c_str());
+					}
+					else
+					{
+						pTexture = m_pDevice->CreateWicTexture2D(wstrFilename.c_str(), pList, wstrFilename.c_str());
+					}
+
+					mat->m_mapTextures.emplace(std::string(texture->first_attribute("Register")->value()), pTexture);
+					texture = texture->next_sibling("Texture");
+				}
+
+				m_mapMaterials.emplace(matInstance->first_attribute("Name")->value(), mat);
+				matInstance = matInstance->next_sibling("MaterialInstance");
+			}
+
 			const rapidxml::xml_node<>* instances = root->first_node("ModelInstances");
 			const rapidxml::xml_node<>* instance = instances->first_node("Instance");
 			while (instance != nullptr)
 			{
 				Artemis::Renderer::Assets::RenderEntity* pInstance = new Artemis::Renderer::Assets::RenderEntity();
 
-				const std::string pModelPath = CLParser::Instance()->GetArgument("data") + std::string("Models\\") + std::string(instance->first_attribute("ModelPath")->value());
+				const std::string pModelPath = CLParser::Instance()->GetArgument("data") + std::string("\\Models\\") + std::string(instance->first_attribute("ModelPath")->value());
 				pInstance->SetModelName(instance->first_attribute("ModelName")->value());
 				pInstance->LoadModelFromFile(pModelPath.c_str(), m_pDevice, pList);
-				pInstance->SetMaterial(instance->first_attribute("Material")->value());
+				pInstance->SetMaterial(instance->first_attribute("MaterialInstance")->value());
 				pInstance->SetConstantBuffer(Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer("ObjectCB", m_pDevice));
 				pInstance->SetRotation(0.0f, 0.0f, 0.0f);
 
@@ -290,7 +346,7 @@ namespace Artemis::Renderer::Techniques
 		}
 
 		const std::string strScenePath = std::string(CLParser::Instance()->GetArgument("data")) +
-			std::string("Scenes\\") +
+			std::string("\\Scenes\\") +
 			std::string(CLParser::Instance()->GetArgument("scene"));
 		if ( !LoadScene(strScenePath))
 		{
@@ -304,9 +360,16 @@ namespace Artemis::Renderer::Techniques
 		return true;
 	}
 
+	float direction = 2;
 	void ForwardRenderer::Update( double _deltaTime )
 	{
 		UpdatePassConstants();
+
+		m_vpLights[0]->Position.x += direction * _deltaTime;
+		if (m_vpLights[0]->Position.x >= 2.0 || m_vpLights[0]->Position.x <= -2.0)
+		{
+			direction *= -1.0f;
+		}
 
 		for ( UINT i = 0; i < m_vpRenderEntities.size(); ++i )
 		{
@@ -393,7 +456,7 @@ namespace Artemis::Renderer::Techniques
 				v[1] = m_vpCameras[i]->GetPosition().y;
 				v[2] = m_vpCameras[i]->GetPosition().z;
 
-				if ( ImGui::SliderFloat3( "Position:", v, -1000.0f, 1000.0f ) )
+				if ( ImGui::SliderFloat3( "Position:", v, -10.0f, 10.0f ) )
 				{
 					m_vpCameras[i]->SetPosition( v[0], v[1], v[2] );
 				}
@@ -401,7 +464,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpCameras[i]->GetTarget().x;
 				v[1] = m_vpCameras[i]->GetTarget().y;
 				v[2] = m_vpCameras[i]->GetTarget().z;
-				if ( ImGui::SliderFloat3( "Target:", v, -1000.0f, 1000.0f ) )
+				if ( ImGui::SliderFloat3( "Target:", v, -10.0f, 10.0f) )
 				{
 					m_vpCameras[i]->SetTarget( v[0], v[1], v[2] );
 				}
@@ -409,7 +472,7 @@ namespace Artemis::Renderer::Techniques
 				v[0] = m_vpCameras[i]->GetUp().x;
 				v[1] = m_vpCameras[i]->GetUp().y;
 				v[2] = m_vpCameras[i]->GetUp().z;
-				if ( ImGui::SliderFloat3( "Up:", v, -1000.0f, 1000.0f ) )
+				if ( ImGui::SliderFloat3( "Up:", v, -10.0f, 10.0f ) )
 				{
 					m_vpCameras[i]->SetUp( v[0], v[1], v[2] );
 				}
@@ -580,15 +643,12 @@ namespace Artemis::Renderer::Techniques
 
 			Interfaces::IGpuResource* pModelCb = pModel->GetConstantBuffer();
 
-			Artemis::Renderer::Shaders::Effect* effect = Artemis::Renderer::Shaders::ShaderCache::Instance()->GetEffect( pModel->GetMaterialName() );
-
-			Artemis::Renderer::Interfaces::IMaterial* mat = new Artemis::Renderer::Interfaces::IMaterial();
-			mat->m_pVertexShader                          = effect->GetVertexShader();
-			mat->m_pPixelShader                           = effect->GetPixelShader();
+			Artemis::Renderer::Interfaces::IMaterial* mat = m_mapMaterials.at(pModel->GetMaterialName());
 
 			m_pDevice->SetMaterial( mat );
 			m_pDevice->SetSamplerState( "Albedo", m_pDevice->GetDefaultSamplerState() );
 			m_pDevice->SetSamplerState( "Normal", m_pDevice->GetDefaultSamplerState() );
+			m_pDevice->SetSamplerState( "AmbientOcclusion", m_pDevice->GetDefaultSamplerState() );
 
 			m_pDevice->SetConstantBuffer( "ObjectCB", pModelCb );
 			m_pDevice->SetConstantBuffer( "PassCB", m_pMainPassCb );
@@ -599,17 +659,12 @@ namespace Artemis::Renderer::Techniques
 			{
 				const Artemis::Renderer::Assets::Mesh& rMesh = pModel->GetModel()->pMeshList[j];
 
-				m_pDevice->SetTexture( "Albedo", rMesh.pTexture[ALBEDO] );
-				m_pDevice->SetTexture( "Normal", rMesh.pTexture[NORMAL] );
-
 				Artemis::Renderer::Helpers::RenderMarker profile( _pGfxCmdList, "Mesh: %llu", j );
 				if ( m_pDevice->FlushState() )
 				{
 					_pGfxCmdList->DrawIndexedInstanced( rMesh.pVertexBuffer, rMesh.pIndexBuffer, rMesh.Indices );
 				}
 			}
-
-			delete mat;
 		}
 	}
 }
