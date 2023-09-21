@@ -93,6 +93,9 @@
     <ClCompile Include="DirectX12\RenderTargetResourceDx12.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="DirectX12\TextureCubeResourceDx12.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectX12\CommandListDx12.h">
@@ -156,6 +159,9 @@
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="DirectX12\RenderTargetResourceDx12.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX12\TextureCubeResourceDx12.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
   </ItemGroup>

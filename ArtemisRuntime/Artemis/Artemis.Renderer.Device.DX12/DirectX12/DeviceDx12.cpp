@@ -9,6 +9,7 @@
 #include "DescriptorHeapDx12.h"
 
 #include "Texture2DResourceDx12.h"
+#include "TextureCubeResourceDx12.h"
 #include "VertexBufferResourceDx12.h"
 #include "IndexBufferResourceDx12.h"
 #include "ConstantBufferResourceDx12.h"
@@ -328,6 +329,16 @@ namespace Artemis::Renderer::Device::Dx12
 	{
 		return new Texture2DResourceDx12( _pWstrFilename, false, this, _pCommandList, m_pDescHeapSrvCbv, _pDebugName );
 	}
+
+    IGpuResource* DeviceDx12::CreateTextureCube(const wchar_t* _pWstrFilename, IACommandList* _pCommandList, const wchar_t* _pDebugName) const
+    {
+        return new TextureCubeResourceDx12(_pWstrFilename, true, this, _pCommandList, m_pDescHeapSrvCbv, _pDebugName);
+    }
+
+    IGpuResource* DeviceDx12::CreateWicTextureCube(const wchar_t* _pWstrFilename, IACommandList* _pCommandList, const wchar_t* _pDebugName) const
+    {
+        return new TextureCubeResourceDx12(_pWstrFilename, false, this, _pCommandList, m_pDescHeapSrvCbv, _pDebugName);
+    }
 
 	IGpuResource* DeviceDx12::CreateVertexBufferResource( IACommandList* _pCommandList, const unsigned int _sizeInBytes, const unsigned int _strideInBytes, const EAResourceFlags _flags, const void* _pData, const wchar_t* _pDebugName ) const
 	{

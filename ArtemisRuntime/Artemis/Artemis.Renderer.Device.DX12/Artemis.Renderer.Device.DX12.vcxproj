@@ -44,6 +44,7 @@
     </ClCompile>
     <ClCompile Include="DirectX12\SwapChainDx12.cpp" />
     <ClCompile Include="DirectX12\Texture2DResourceDx12.cpp" />
+    <ClCompile Include="DirectX12\TextureCubeResourceDx12.cpp" />
     <ClCompile Include="DirectX12\TextureLoader.cpp" />
     <ClCompile Include="DirectX12\VertexBufferResourceDx12.cpp" />
   </ItemGroup>
@@ -66,6 +67,7 @@
     <ClInclude Include="DirectX12\ShaderDx12.h" />
     <ClInclude Include="DirectX12\SwapChainDx12.h" />
     <ClInclude Include="DirectX12\Texture2DResourceDx12.h" />
+    <ClInclude Include="DirectX12\TextureCubeResourceDx12.h" />
     <ClInclude Include="DirectX12\TextureLoader.h" />
     <ClInclude Include="DirectX12\UploadBuffer.h" />
     <ClInclude Include="DirectX12\VertexBufferResourceDx12.h" />
