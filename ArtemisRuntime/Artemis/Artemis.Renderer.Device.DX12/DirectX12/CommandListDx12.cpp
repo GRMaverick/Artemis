@@ -259,14 +259,14 @@ namespace Artemis::Renderer::Device::Dx12
 	void CommandListDx12::SetDescriptorHeaps( Interfaces::IDescriptorHeap** _ppHeaps, const unsigned int _uiHeaps ) const
 	{
 		LOW_LEVEL_PROFILE_MARKER( this, "%s: %s", g_TypeToString[m_clType], "SetDescriptorHeaps" );
-		std::vector<ID3D12DescriptorHeap*> vpHeaps;
-		vpHeaps.resize( _uiHeaps );
-
+		ID3D12DescriptorHeap** vpHeaps = new ID3D12DescriptorHeap*[_uiHeaps];
 		for ( unsigned int i = 0; i < _uiHeaps; ++i )
 		{
 			vpHeaps[i] = static_cast<ID3D12DescriptorHeap*>(_ppHeaps[i]->GetDeviceObject());
 		}
 
-		m_pList->SetDescriptorHeaps( static_cast<UINT>(vpHeaps.size()), &vpHeaps[0] );
+		m_pList->SetDescriptorHeaps(_uiHeaps, &vpHeaps[0] );
+
+		delete[] vpHeaps;
 	}
 }
