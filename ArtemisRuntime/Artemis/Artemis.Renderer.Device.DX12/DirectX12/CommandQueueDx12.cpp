@@ -111,14 +111,14 @@ namespace Artemis::Renderer::Device::Dx12
 	{
 		PIXBeginEvent(m_pQueue.Get(), PIX_COLOR_DEFAULT, "%s: %s", g_TypeToString[m_eType], "ExecuteCommandLists" );
 
-		std::vector<ID3D12CommandList*> vpLists;
+		ID3D12CommandList** vpLists = new ID3D12CommandList*[m_pAwaitingExecution.size()];
 		for ( UINT listIdx = 0; listIdx < m_pAwaitingExecution.size(); ++listIdx )
 		{
 			m_pAwaitingExecution[listIdx]->Close();
-			vpLists.push_back( m_pAwaitingExecution[listIdx]->m_pList.Get() );
+			vpLists[listIdx] = m_pAwaitingExecution[listIdx]->m_pList.Get();
 		}
 
-		if ( !vpLists.size() )
+		if ( !m_pAwaitingExecution.size())
 		{
             LogWarning("Execute requested on empty queue");
 
@@ -126,7 +126,7 @@ namespace Artemis::Renderer::Device::Dx12
 			return;
 		}
 
-		m_pQueue->ExecuteCommandLists( static_cast<UINT>(vpLists.size()), &vpLists[0] );
+		m_pQueue->ExecuteCommandLists( static_cast<UINT>(m_pAwaitingExecution.size()), &vpLists[0] );
 
 		Flush();
 
@@ -142,6 +142,8 @@ namespace Artemis::Renderer::Device::Dx12
 		{
 			m_pAwaitingExecution.erase( m_pAwaitingExecution.begin() + listIdx );
         }
+
+		delete[] vpLists;
 
         PIXEndEvent(m_pQueue.Get());
 	}
