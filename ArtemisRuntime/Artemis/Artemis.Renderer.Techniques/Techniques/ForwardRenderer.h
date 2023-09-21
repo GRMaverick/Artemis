@@ -45,6 +45,23 @@ namespace Artemis::Renderer::Techniques
 	{
 		class Camera;
 		class RenderEntity;
+
+		// TODO: Consolidate to Render Entity.
+		class Skybox
+		{
+		public:
+			Skybox() { }
+
+            void SetName(const char* _pName) { _snprintf_s(m_pModelName, ARRAYSIZE(m_pModelName), "%s", _pName); }
+            void SetMaterial(const char* _pMaterialName) { _snprintf_s(m_pMaterialName, ARRAYSIZE(m_pMaterialName), "%s", _pMaterialName); }
+            const char* GetName(void) const { return m_pModelName; }
+            const char* GetMaterialName(void) const { return m_pMaterialName; }
+
+		protected:
+        private:
+            char                      m_pMaterialName[64] = {};
+            char                      m_pModelName[64] = {};
+		};
 	}
 
 	class ForwardRenderer final : public Interfaces::IRenderer
@@ -74,6 +91,7 @@ namespace Artemis::Renderer::Techniques
 		Interfaces::IGpuResource* m_pMainPassCb;
 		//Interfaces::IGpuResource* m_pSpotlightCb;
 
+		Scene::Skybox* m_pSkybox;
 		std::vector<DirectionalLight*>											m_vpLights;
 		std::vector<Artemis::Renderer::Assets::Camera*>							m_vpCameras;
 		std::vector<Artemis::Renderer::Assets::RenderEntity*>					m_vpRenderEntities;

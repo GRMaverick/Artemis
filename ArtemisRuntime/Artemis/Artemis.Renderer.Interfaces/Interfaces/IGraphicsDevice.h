@@ -358,10 +358,14 @@ namespace Artemis::Renderer::Interfaces
 		virtual IGpuResource* CreateVertexBufferResource( ICommandList* _pCommandList, unsigned int _sizeInBytes, unsigned int _strideInBytes, ResourceFlags _flags, const void* _pData, const wchar_t* _pDebugName = L"" ) const = 0;
 		virtual IGpuResource* CreateIndexBufferResource( ICommandList* _pCommandList, unsigned int _sizeInBytes, unsigned int _strideInBytes, ResourceFlags _flags, const void* _pData, const wchar_t* _pDebugName = L"" ) const = 0;
 		virtual IGpuResource* CreateConstantBufferResource( const IConstantBufferParameters::ConstantBuffer& _params, const wchar_t* _pDebugName = L"" ) const = 0;
-		virtual IGpuResource* CreateTexture2D( const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"" ) const = 0;
-		virtual IGpuResource* CreateWicTexture2D( const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"" ) const = 0;
 		virtual IGpuResource* CreateRenderTargetResource( const Interfaces::IGraphicsDevice* _pDevice, const Interfaces::ICommandList* _pCmdList, const unsigned _width, const unsigned _height, const Interfaces::DxgiFormat _format, Interfaces::IDescriptorHeap* _pRtvHeap, Interfaces::IDescriptorHeap* _pSrvHeap ) const = 0;
 		virtual IGpuResource* CreateDepthBufferResource( const Interfaces::IGraphicsDevice* _pDevice, const Interfaces::ICommandList* _pCmdList, const unsigned _width, const unsigned _height, const Interfaces::DxgiFormat _format, Interfaces::IDescriptorHeap* _pDsvHeap, Interfaces::IDescriptorHeap* _pSrvHeap ) const = 0;
+        
+		virtual IGpuResource* CreateTexture2D(const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"") const = 0;
+        virtual IGpuResource* CreateWicTexture2D(const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"") const = 0;
+
+		virtual IGpuResource* CreateTextureCube(const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"") const = 0;
+        virtual IGpuResource* CreateWicTextureCube(const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"") const = 0;
 
 		virtual void BeginFrame( void ) = 0;
 		virtual void EndFrame( void ) = 0;

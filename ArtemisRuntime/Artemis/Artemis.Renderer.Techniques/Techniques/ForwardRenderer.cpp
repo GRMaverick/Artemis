@@ -260,16 +260,31 @@ namespace Artemis::Renderer::Techniques
 				{
 					std::string strFilename = CLParser::Instance()->GetArgument("data") + std::string("\\Textures\\") + "\\" + std::string(texture->first_attribute("Path")->value());
 					const std::wstring wstrFilename = std::wstring(strFilename.begin(), strFilename.end());
-					const char* ext = GetExtension(texture->first_attribute("Path")->value());
+                    const char* ext = GetExtension(texture->first_attribute("Path")->value());
+                    char* dimension = texture->first_attribute("Dimension")->value();
 
 					IGpuResource* pTexture = nullptr;
 					if (strncmp(ext, "dds", 3) == 0)
 					{
-						pTexture = m_pDevice->CreateTexture2D(wstrFilename.c_str(), pList, wstrFilename.c_str());
+						if (strstr(dimension, "Cube"))
+                        {
+                            pTexture = m_pDevice->CreateTextureCube(wstrFilename.c_str(), pList, wstrFilename.c_str());
+						}
+						else
+                        {
+                            pTexture = m_pDevice->CreateTexture2D(wstrFilename.c_str(), pList, wstrFilename.c_str());
+						}
 					}
 					else
-					{
-						pTexture = m_pDevice->CreateWicTexture2D(wstrFilename.c_str(), pList, wstrFilename.c_str());
+                    {
+                        if (strstr(dimension, "Cube"))
+                        {
+                            pTexture = m_pDevice->CreateWicTextureCube(wstrFilename.c_str(), pList, wstrFilename.c_str());
+                        }
+                        else
+                        {
+                            pTexture = m_pDevice->CreateWicTexture2D(wstrFilename.c_str(), pList, wstrFilename.c_str());
+                        }
 					}
 
 					mat->m_mapTextures.emplace(std::string(texture->first_attribute("Register")->value()), pTexture);
@@ -307,6 +322,14 @@ namespace Artemis::Renderer::Techniques
 			}
 
 			m_pCpyCmdQueue->SubmitToQueue(pList);
+
+			const rapidxml::xml_node<>* skybox = root->first_node("SkyBox");
+			if (skybox != nullptr)
+			{
+                m_pSkybox = new Scene::Skybox();
+				m_pSkybox->SetName(skybox->first_attribute("Name")->value());
+				m_pSkybox->SetMaterial(skybox->first_attribute("MaterialInstance")->value());
+			}
 
 			return true;
 		}
@@ -457,7 +480,7 @@ namespace Artemis::Renderer::Techniques
             m_pDevice->SetConstantBuffer("ObjectCB", pModelCb);
             m_pDevice->SetConstantBuffer("PassCB", m_pMainPassCb);
             m_pDevice->SetConstantBuffer("DirectionalLightCB", m_pLightsCb);
-            //m_pDevice->SetConstantBuffer( "SpotlightCB", m_pSpotlightCb );s
+            //m_pDevice->SetConstantBuffer( "SpotlightCB", m_pSpotlightCb );
 
             for (UINT j = 0; j < pModel->GetModel()->MeshCount; ++j)
             {
