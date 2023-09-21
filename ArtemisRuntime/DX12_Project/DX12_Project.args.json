@@ -11,6 +11,10 @@
       "Command": "-data:C:\\Users\\Maverick\\Documents\\GitHub\\Artemis\\Dev_Content"
     },
     {
+      "Id": "31f6203c-5ce1-4307-b1d8-e0c60e1270b4",
+      "Command": "-data:D:\\Training\\Artemis\\Dev_Content"
+    },
+    {
       "Id": "3dd9ef11-458f-4e54-8d8f-6ceccf27cbe7",
       "Command": "-threads:4"
     },

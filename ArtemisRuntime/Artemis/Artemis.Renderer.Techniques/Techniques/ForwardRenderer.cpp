@@ -224,8 +224,6 @@ namespace Artemis::Renderer::Techniques
 				DirectionalLight* pLight = new DirectionalLight();
 				const rapidxml::xml_node<>* posNode = light->first_node("Position");
 				const rapidxml::xml_node<>* diffuse = light->first_node("Diffuse");
-				//const rapidxml::xml_node<>* ambient = light->first_node("Ambient");
-				//const rapidxml::xml_node<>* specular = light->first_node("Specular");
 
 				const float x = static_cast<float>(atof(posNode->first_attribute("X")->value()));
 				const float y = static_cast<float>(atof(posNode->first_attribute("Y")->value()));
@@ -237,21 +235,6 @@ namespace Artemis::Renderer::Techniques
 				float b = static_cast<float>(atof(diffuse->first_attribute("B")->value()));
 				float a = static_cast<float>(atof(diffuse->first_attribute("A")->value()));
 				pLight->Diffuse = Artemis::Maths::Vector4(r, g, b, a);
-
-				//r = static_cast<float>(atof(ambient->first_attribute("R")->value()));
-				//g = static_cast<float>(atof(ambient->first_attribute("G")->value()));
-				//b = static_cast<float>(atof(ambient->first_attribute("B")->value()));
-				//a = static_cast<float>(atof(ambient->first_attribute("A")->value()));
-				//pLight->Ambient = Artemis::Maths::Vector4(r, g, b, a);
-
-				//r = static_cast<float>(atof(specular->first_attribute("R")->value()));
-				//g = static_cast<float>(atof(specular->first_attribute("G")->value()));
-				//b = static_cast<float>(atof(specular->first_attribute("B")->value()));
-				//a = static_cast<float>(atof(specular->first_attribute("A")->value()));
-				//pLight->Specular = Artemis::Maths::Vector4(r, g, b, a);
-
-				//const float power = static_cast<float>(atof(specular->first_attribute("Power")->value()));
-				//pLight->SpecularPower = power;
 
 				m_vpLights.push_back(pLight);
 
@@ -441,6 +424,54 @@ namespace Artemis::Renderer::Techniques
 		return true;
 	}
 
+    void ForwardRenderer::MainRenderPass(const Interfaces::ICommandList* _pGfxCmdList) const
+    {
+        Artemis::Renderer::Helpers::RenderMarker profile(_pGfxCmdList, "MainRenderPass");
+
+        m_pDevice->SetBlendState(DefaultBlendDesc());
+        m_pDevice->SetRasterizerState(DefaultRasteriserStateDesc());
+        m_pDevice->SetDepthStencilState(DefaultDepthStencilDesc());
+
+        // Per Object Draws
+        for (UINT i = 0; i < m_vpRenderEntities.size(); ++i)
+        {
+            const Artemis::Renderer::Assets::RenderEntity* pModel = m_vpRenderEntities[i];
+            if (!pModel->GetModel())
+            {
+                continue;
+            }
+
+            Artemis::Renderer::Helpers::RenderMarker profile(_pGfxCmdList, "%s", pModel->GetModelName());
+
+            Interfaces::IGpuResource* pModelCb = pModel->GetConstantBuffer();
+
+            Artemis::Renderer::Interfaces::IMaterial* mat = m_mapMaterials.at(pModel->GetMaterialName());
+
+            m_pDevice->SetMaterial(mat);
+            m_pDevice->SetSamplerState("Albedo", m_pDevice->GetDefaultSamplerState());
+            m_pDevice->SetSamplerState("Normal", m_pDevice->GetDefaultSamplerState());
+            m_pDevice->SetSamplerState("AmbientOcclusion", m_pDevice->GetDefaultSamplerState());
+            m_pDevice->SetSamplerState("Metalness", m_pDevice->GetDefaultSamplerState());
+            m_pDevice->SetSamplerState("Roughness", m_pDevice->GetDefaultSamplerState());
+
+            m_pDevice->SetConstantBuffer("ObjectCB", pModelCb);
+            m_pDevice->SetConstantBuffer("PassCB", m_pMainPassCb);
+            m_pDevice->SetConstantBuffer("DirectionalLightCB", m_pLightsCb);
+            //m_pDevice->SetConstantBuffer( "SpotlightCB", m_pSpotlightCb );s
+
+            for (UINT j = 0; j < pModel->GetModel()->MeshCount; ++j)
+            {
+                const Artemis::Renderer::Assets::Mesh& rMesh = pModel->GetModel()->pMeshList[j];
+
+                Artemis::Renderer::Helpers::RenderMarker profile(_pGfxCmdList, "Mesh: %llu", j);
+                if (m_pDevice->FlushState())
+                {
+                    _pGfxCmdList->DrawIndexedInstanced(rMesh.pVertexBuffer, rMesh.pIndexBuffer, rMesh.Indices);
+                }
+            }
+        }
+    }
+
 	void ForwardRenderer::ImGuiPass( const Interfaces::ICommandList* _pGfxCmdList ) const
 	{
 #if defined(_DEBUG)
@@ -452,7 +483,7 @@ namespace Artemis::Renderer::Techniques
 		ImGUIEngine::Begin();
 
 		//ImGui_MainCamera();
-		//ImGui_Memory();
+		ImGui_Memory();
 		ImGui_Lights();
 		//ImGui_Objects();
 		ImGui_DeviceStats();
@@ -553,32 +584,6 @@ namespace Artemis::Renderer::Techniques
 					m_vpLights[i]->Diffuse.y = v[1];
 					m_vpLights[i]->Diffuse.z = v[2];
 				}
-
-				//v[0] = m_vpLights[i]->Ambient.x;
-				//v[1] = m_vpLights[i]->Ambient.y;
-				//v[2] = m_vpLights[i]->Ambient.z;
-				//if (ImGui::SliderFloat3("Ambient:", v, 0.0f, 1.0f))
-				//{
-				//	m_vpLights[i]->Ambient.x = v[0];
-				//	m_vpLights[i]->Ambient.y = v[1];
-				//	m_vpLights[i]->Ambient.z = v[2];
-				//}
-
-				//v[0] = m_vpLights[i]->Specular.x;
-				//v[1] = m_vpLights[i]->Specular.y;
-				//v[2] = m_vpLights[i]->Specular.z;
-				//if (ImGui::SliderFloat3("Specular:", v, 0.0f, 1.0f))
-				//{
-				//	m_vpLights[i]->Specular.x = v[0];
-				//	m_vpLights[i]->Specular.y = v[1];
-				//	m_vpLights[i]->Specular.z = v[2];
-				//}
-
-				//float nS = m_vpLights[i]->SpecularPower;
-				//if (ImGui::SliderFloat("Specular Power:", &nS, 0.0f, 10.0f))
-				//{
-				//	m_vpLights[i]->SpecularPower = nS;
-				//}
 			}
 
 			ImGui::End();
@@ -665,54 +670,6 @@ namespace Artemis::Renderer::Techniques
 				ImGui::NewLine();
 			}
 			ImGui::End();
-		}
-	}
-
-	void ForwardRenderer::MainRenderPass( const Interfaces::ICommandList* _pGfxCmdList ) const
-	{
-		Artemis::Renderer::Helpers::RenderMarker profile( _pGfxCmdList, "MainRenderPass" );
-
-		m_pDevice->SetBlendState( DefaultBlendDesc() );
-		m_pDevice->SetRasterizerState( DefaultRasteriserStateDesc() );
-		m_pDevice->SetDepthStencilState( DefaultDepthStencilDesc() );
-
-		// Per Object Draws
-		for ( UINT i = 0; i < m_vpRenderEntities.size(); ++i )
-		{
-			const Artemis::Renderer::Assets::RenderEntity* pModel = m_vpRenderEntities[i];
-			if ( !pModel->GetModel() )
-			{
-				continue;
-			}
-
-			Artemis::Renderer::Helpers::RenderMarker profile( _pGfxCmdList, "%s", pModel->GetModelName() );
-
-			Interfaces::IGpuResource* pModelCb = pModel->GetConstantBuffer();
-
-			Artemis::Renderer::Interfaces::IMaterial* mat = m_mapMaterials.at(pModel->GetMaterialName());
-
-			m_pDevice->SetMaterial( mat );
-			m_pDevice->SetSamplerState( "Albedo", m_pDevice->GetDefaultSamplerState() );
-			m_pDevice->SetSamplerState( "Normal", m_pDevice->GetDefaultSamplerState() );
-			m_pDevice->SetSamplerState( "AmbientOcclusion", m_pDevice->GetDefaultSamplerState() );
-			m_pDevice->SetSamplerState( "Metalness", m_pDevice->GetDefaultSamplerState() );
-			m_pDevice->SetSamplerState( "Roughness", m_pDevice->GetDefaultSamplerState() );
-
-			m_pDevice->SetConstantBuffer( "ObjectCB", pModelCb );
-			m_pDevice->SetConstantBuffer( "PassCB", m_pMainPassCb );
-			m_pDevice->SetConstantBuffer( "DirectionalLightCB", m_pLightsCb );
-			//m_pDevice->SetConstantBuffer( "SpotlightCB", m_pSpotlightCb );s
-
-			for ( UINT j = 0; j < pModel->GetModel()->MeshCount; ++j )
-			{
-				const Artemis::Renderer::Assets::Mesh& rMesh = pModel->GetModel()->pMeshList[j];
-
-				Artemis::Renderer::Helpers::RenderMarker profile( _pGfxCmdList, "Mesh: %llu", j );
-				if ( m_pDevice->FlushState() )
-				{
-					_pGfxCmdList->DrawIndexedInstanced( rMesh.pVertexBuffer, rMesh.pIndexBuffer, rMesh.Indices );
-				}
-			}
 		}
 	}
 }
