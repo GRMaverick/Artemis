@@ -380,7 +380,6 @@ namespace Artemis::Renderer::Techniques
 
 			Object obj;
 			obj.World    = m_vpRenderEntities[i]->GetWorld();
-			obj.Material = m_vpRenderEntities[i]->GetMaterialData();
 
 			if ( m_vpRenderEntities[i]->GetConstantBuffer() )
 				bool bRet = m_vpRenderEntities[i]->GetConstantBuffer()->UpdateValue( "World", &obj, sizeof( Object ) );
@@ -617,46 +616,6 @@ namespace Artemis::Renderer::Techniques
 	{
 		if (ImGui::Begin("Objects:"))
 		{
-			float v[3];
-			for (unsigned int i = 0; i < m_vpRenderEntities.size(); ++i)
-			{
-				if (ImGui::CollapsingHeader(m_vpRenderEntities[i]->GetModelName()))
-				{
-					Material material = m_vpRenderEntities[i]->GetMaterialData();
-
-					v[0] = material.Diffuse.x;
-					v[1] = material.Diffuse.y;
-					v[2] = material.Diffuse.z;
-					if (ImGui::SliderFloat3("Diffuse:", v, 0.0f, 1.0f))
-					{
-						material.Diffuse.x = v[0];
-						material.Diffuse.y = v[1];
-						material.Diffuse.z = v[2];
-					}
-
-					v[0] = material.Ambient.x;
-					v[1] = material.Ambient.y;
-					v[2] = material.Ambient.z;
-					if (ImGui::SliderFloat3("Ambient:", v, 0.0f, 1.0f))
-					{
-						material.Ambient.x = v[0];
-						material.Ambient.y = v[1];
-						material.Ambient.z = v[2];
-					}
-
-					v[0] = material.Specular.x;
-					v[1] = material.Specular.y;
-					v[2] = material.Specular.z;
-					if (ImGui::SliderFloat3("Specular:", v, 0.0f, 1.0f))
-					{
-						material.Specular.x = v[0];
-						material.Specular.y = v[1];
-						material.Specular.z = v[2];
-					}
-
-					m_vpRenderEntities[i]->SetMaterialData(material);
-				}
-			}
 			ImGui::End();
 		}
 	}
