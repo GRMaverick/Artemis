@@ -321,15 +321,18 @@ namespace Artemis::Renderer::Techniques
 				instance = instance->next_sibling("Instance");
 			}
 
-			m_pCpyCmdQueue->SubmitToQueue(pList);
-
 			const rapidxml::xml_node<>* skybox = root->first_node("SkyBox");
 			if (skybox != nullptr)
 			{
-                m_pSkybox = new Scene::Skybox();
-				m_pSkybox->SetName(skybox->first_attribute("Name")->value());
+				m_pSkybox = new Artemis::Renderer::Assets::RenderEntity();
+				m_pSkybox->SetModelName(skybox->first_attribute("Name")->value());
 				m_pSkybox->SetMaterial(skybox->first_attribute("MaterialInstance")->value());
+				m_pSkybox->LoadModelFromPrimitive(m_pDevice, pList, 10);
+				m_pSkybox->SetConstantBuffer(Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer("ObjectCB", m_pDevice));
+				m_pSkybox->SetScale(1.0f);
 			}
+
+			m_pCpyCmdQueue->SubmitToQueue(pList);
 
 			return true;
 		}
@@ -373,6 +376,20 @@ namespace Artemis::Renderer::Techniques
 	void ForwardRenderer::Update( double _deltaTime )
 	{
 		UpdatePassConstants();
+
+		{
+			// Skybox
+			Vector3 pos = m_vpCameras[0]->GetPosition();
+			if (m_pSkybox)
+			{
+				m_pSkybox->SetPosition(pos.x, pos.y, pos.z);
+				m_pSkybox->Update();
+
+				ConstantBuffer_Object skyboxCb;
+				skyboxCb.World = m_pSkybox->GetWorld();
+				m_pSkybox->GetConstantBuffer()->UpdateValue("World", &skyboxCb, sizeof(ConstantBuffer_Object));
+			}
+		}
 
 		for ( UINT i = 0; i < m_vpRenderEntities.size(); ++i )
 		{
@@ -426,6 +443,7 @@ namespace Artemis::Renderer::Techniques
 			m_pSwapChain->SetOmRenderTargets( pGfxCmdList );
 			pGfxCmdList->SetIaPrimitiveTopology( Interfaces::PrimitiveTopology_TriangleList );
 
+			RenderCubemap( pGfxCmdList );
 			MainRenderPass( pGfxCmdList );
 			ImGuiPass( pGfxCmdList );
 		}
@@ -493,6 +511,46 @@ namespace Artemis::Renderer::Techniques
             }
         }
     }
+
+	void ForwardRenderer::RenderCubemap(const Interfaces::ICommandList* _pGfxCmdList) const
+	{
+		static Interfaces::RasteriserStateDesc rs = DefaultRasteriserStateDesc();
+		rs.CullMode = Interfaces::CullMode_None;
+		m_pDevice->SetRasterizerState(rs);
+
+		static Interfaces::DepthStencilDesc ds = DefaultDepthStencilDesc();
+		ds.DepthEnable = true;
+		ds.DepthWriteMask = DepthWriteMask_All;
+		ds.DepthFunc = ComparisonFunc_LessEqual;
+		m_pDevice->SetDepthStencilState(ds);
+
+		if (m_pSkybox == nullptr)
+		{
+			return;
+		}
+
+		Artemis::Renderer::Helpers::RenderMarker profile(_pGfxCmdList, "Cubemap Pass");
+
+		Artemis::Renderer::Interfaces::IMaterial* pMat = m_mapMaterials.at(m_pSkybox->GetMaterialName());
+		m_pDevice->SetMaterial(pMat);
+		m_pDevice->SetSamplerState("Skybox", m_pDevice->GetDefaultSamplerState());
+
+		Interfaces::IGpuResource* pCubemapCb = m_pSkybox->GetConstantBuffer();
+		m_pDevice->SetConstantBuffer("ObjectCB", pCubemapCb);
+		m_pDevice->SetConstantBuffer("PassCB", m_pMainPassCb);
+		m_pDevice->SetConstantBuffer("DirectionalLightCB", m_pLightsCb);
+
+		for (UINT j = 0; j < m_pSkybox->GetModel()->MeshCount; ++j)
+		{
+			const Artemis::Renderer::Assets::Mesh& rMesh = m_pSkybox->GetModel()->pMeshList[j];
+
+			Artemis::Renderer::Helpers::RenderMarker profile(_pGfxCmdList, "Mesh: %llu", j);
+			if (m_pDevice->FlushState())
+			{
+				_pGfxCmdList->DrawIndexedInstanced(rMesh.pVertexBuffer, rMesh.pIndexBuffer, rMesh.Indices);
+			}
+		}
+	}
 
 	void ForwardRenderer::ImGuiPass( const Interfaces::ICommandList* _pGfxCmdList ) const
 	{

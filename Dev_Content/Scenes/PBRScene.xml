@@ -60,7 +60,7 @@
 		<MaterialInstance Name="Cubemap">
 			<Effect Name="Cubemap" />
 			<Textures>
-				<Texture Register="Skybox" Path="Skyboxes\\skyboxsun25degtest.png" Dimension="Cube" />
+				<Texture Register="Skybox" Path="Skyboxes\\desertcube1024.dds" Dimension="Cube" />
 			</Textures>
 		</MaterialInstance>
     </MaterialInstances>

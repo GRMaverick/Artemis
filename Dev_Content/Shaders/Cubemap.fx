@@ -43,7 +43,7 @@ VSOutput MainVS(VSInput _input)
 {
     VSOutput output;
     output.PosW = mul(cbObject.World, float4(_input.Position, 1.0f)).xyz;
-    output.PosH = mul(cbPass.ViewProjection, float4(output.PosW.xyz, 1.0f));
+    output.PosH = mul(cbPass.ViewProjection, float4(output.PosW.xyz, 1.0f)).xyww;
     output.Texture = _input.Position;
     
     return output;
@@ -59,6 +59,6 @@ SamplerState SkyboxSampler : register(s0);
 // Entry Point
 //
 float4 MainPS(VSOutput _input) : SV_TARGET
-{    
+{
     return Skybox.Sample(SkyboxSampler, _input.Texture);
 }
