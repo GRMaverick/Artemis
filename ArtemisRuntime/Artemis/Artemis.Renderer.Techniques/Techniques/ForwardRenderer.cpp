@@ -221,7 +221,7 @@ namespace Artemis::Renderer::Techniques
 			const rapidxml::xml_node<>* light = lights->first_node("Light");
 			while (light != nullptr)
 			{
-				DirectionalLight* pLight = new DirectionalLight();
+				ConstantBuffer_DLight* pLight = new ConstantBuffer_DLight();
 				const rapidxml::xml_node<>* posNode = light->first_node("Position");
 				const rapidxml::xml_node<>* diffuse = light->first_node("Diffuse");
 
@@ -345,7 +345,7 @@ namespace Artemis::Renderer::Techniques
 		m_pLightsCb    = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "DirectionalLightCB", m_pDevice );
 		//m_pSpotlightCb = Artemis::Renderer::Shaders::ConstantTable::Instance()->CreateConstantBuffer( "SpotlightCB", m_pDevice );
 
-		LogInfo( "Loading Models:" );
+		LogInfo( "Loading Scene:" );
 
 		PRAGMA_TODO("Command Line Arg for Scene Root");
 		if (!CLParser::Instance()->HasArgument("scene") || !CLParser::Instance()->HasArgument("data"))
@@ -378,11 +378,11 @@ namespace Artemis::Renderer::Techniques
 		{
 			m_vpRenderEntities[i]->Update();
 
-			Object obj;
-			obj.World    = m_vpRenderEntities[i]->GetWorld();
+			ConstantBuffer_Object obj;
+			obj.World = m_vpRenderEntities[i]->GetWorld();
 
 			if ( m_vpRenderEntities[i]->GetConstantBuffer() )
-				bool bRet = m_vpRenderEntities[i]->GetConstantBuffer()->UpdateValue( "World", &obj, sizeof( Object ) );
+				bool bRet = m_vpRenderEntities[i]->GetConstantBuffer()->UpdateValue( "World", &obj, sizeof( ConstantBuffer_Object ) );
 		}
 	}
 
@@ -390,23 +390,23 @@ namespace Artemis::Renderer::Techniques
 	{
 		m_vpCameras[0]->Update();
 
-		Pass cbPass           = Pass();
+		ConstantBuffer_Pass cbPass           = ConstantBuffer_Pass();
 		cbPass.EyePosition    = m_vpCameras[0]->GetPosition();
 		cbPass.ViewProjection = m_vpCameras[0]->GetView() * m_vpCameras[0]->GetProjection();
 
 		bool bRet = false;
 		if ( m_pMainPassCb )
-			bRet = m_pMainPassCb->UpdateValue( nullptr, &cbPass, sizeof( Pass ) );
+			bRet = m_pMainPassCb->UpdateValue( nullptr, &cbPass, sizeof( ConstantBuffer_Pass ) );
 
 		if (m_pLightsCb)
 		{
-			DirectionalLight* lights = new DirectionalLight[m_vpLights.size()];
+			ConstantBuffer_DLight* lights = new ConstantBuffer_DLight[m_vpLights.size()];
 			for (int i = 0; i < m_vpLights.size(); ++i)
 			{
 				lights[i].Diffuse = m_vpLights[i]->Diffuse;
 				lights[i].Position = m_vpLights[i]->Position;
 			}
-			bRet = m_pLightsCb->UpdateValue(nullptr, lights, m_vpLights.size() * sizeof(DirectionalLight));
+			bRet = m_pLightsCb->UpdateValue(nullptr, lights, m_vpLights.size() * sizeof(ConstantBuffer_DLight));
 		}
 		//if ( m_pSpotlightCb )
 		//	bRet = m_pSpotlightCb->UpdateValue( nullptr, nullptr, sizeof( Spotlight ) );
