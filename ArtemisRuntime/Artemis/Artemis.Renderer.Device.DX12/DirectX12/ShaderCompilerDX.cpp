@@ -155,10 +155,10 @@ namespace Artemis::Renderer::Device::Dx12
 					cbInfo->Textures[cb] = textures[cb];
 
 #if defined(DUMP_CONSTANTS)
-						LogInfo( "\tTexture Name: %s", cbInfo.Textures[cb].Name );
-						LogInfo( "\t\tType: %u", cbInfo.Textures[cb].Type );
-						LogInfo( "\t\tBind Point: %u", cbInfo.Textures[cb].BindPoint );
-						LogInfo( "\t\tBind Count: %u", cbInfo.Textures[cb].BindCount );
+						LogInfo( "\tTexture Name: %s", cbInfo->Textures[cb].Name );
+						LogInfo( "\t\tType: %u", cbInfo->Textures[cb].Type );
+						LogInfo( "\t\tBind Point: %u", cbInfo->Textures[cb].BindPoint );
+						LogInfo( "\t\tBind Count: %u", cbInfo->Textures[cb].BindCount );
 #endif
 				}
 
@@ -169,10 +169,10 @@ namespace Artemis::Renderer::Device::Dx12
 					cbInfo->Samplers[sam] = samplers[sam];
 
 #if defined(DUMP_CONSTANTS)
-						LogInfo( "\tSamplers Name: %s", cbInfo.Samplers[sam].Name );
-						LogInfo( "\t\tType: %u", cbInfo.Samplers[sam].Type );
-						LogInfo( "\t\tBind Point: %u", cbInfo.Samplers[sam].BindPoint );
-						LogInfo( "\t\tBind Count: %u", cbInfo.Samplers[sam].BindCount );
+						LogInfo( "\tSamplers Name: %s", cbInfo->Samplers[sam].Name );
+						LogInfo( "\t\tType: %u", cbInfo->Samplers[sam].Type );
+						LogInfo( "\t\tBind Point: %u", cbInfo->Samplers[sam].BindPoint );
+						LogInfo( "\t\tBind Count: %u", cbInfo->Samplers[sam].BindCount );
 #endif
 				}
 			}
