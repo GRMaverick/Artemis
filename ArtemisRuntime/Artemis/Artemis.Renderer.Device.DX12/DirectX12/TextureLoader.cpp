@@ -1242,8 +1242,8 @@ static HRESULT CreateD3DResources12(
     _In_ bool forceSRGB,
     _In_ bool isCubeMap,
     _In_reads_opt_(mipCount* arraySize) D3D12_SUBRESOURCE_DATA* initData,
-    ID3D12Resource* texture,
-    ID3D12Resource* textureUploadHeap
+    ID3D12Resource*& texture,
+    ID3D12Resource*& textureUploadHeap
 )
 {
     if (device == nullptr)
@@ -1682,8 +1682,8 @@ static HRESULT CreateTextureFromDDS12(
     _In_ size_t bitSize,
     _In_ size_t maxsize,
     _In_ bool forceSRGB,
-    ID3D12Resource* texture,
-    ID3D12Resource* textureUploadHeap)
+    ID3D12Resource*& texture,
+    ID3D12Resource*& textureUploadHeap)
 {
     HRESULT hr = S_OK;
 
@@ -2142,8 +2142,8 @@ HRESULT DirectX::CreateDDSTextureFromFile(ID3D11Device* d3dDevice,
 HRESULT DirectX::CreateDDSTextureFromFile12(_In_ ID3D12Device* device,
     _In_ ICommandList* cmdList,
     _In_z_ const wchar_t* szFileName,
-    _Out_ ID3D12Resource* texture,
-    _Out_ ID3D12Resource* textureUploadHeap,
+    _Out_ ID3D12Resource*& texture,
+    _Out_ ID3D12Resource*& textureUploadHeap,
     _In_ size_t maxsize,
     _Out_opt_ DDS_ALPHA_MODE* alphaMode)
 {
