@@ -46,5 +46,4 @@ struct Material
 struct Object
 {
 	DirectX::XMMATRIX World;
-	Material Material;
 };
