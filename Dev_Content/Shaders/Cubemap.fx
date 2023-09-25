@@ -1,3 +1,5 @@
+#include "C:\\Users\\Maverick\\Documents\\GitHub\\Artemis\\ArtemisRuntime\\Artemis\\Artemis.Renderer.Assets\\CBStructures.h"
+
 #define XM_PI 3.141592654f
 
 //
@@ -20,26 +22,18 @@ struct VSOutput
 //
 cbuffer PassCB : register(b0)
 {
-    float4x4 ViewProjection;
-    float3 EyePosition;
+    ConstantBuffer_Pass cbPass;
 };
 
 cbuffer ObjectCB : register(b1)
 {
-    float4x4 World;
-};
-
-struct DirectionalLight
-{
-    float4 Diffuse;    
-    float3 Position;
-    float Padding;
+    ConstantBuffer_Object cbObject;
 };
 
 static const int LightCount = 4;
 cbuffer DirectionalLightCB : register(b2)
 {
-    DirectionalLight DirectionalLightData[LightCount];
+    ConstantBuffer_DLight cbDirectionalLightData[LightCount];
 };
 
 //
@@ -48,8 +42,8 @@ cbuffer DirectionalLightCB : register(b2)
 VSOutput MainVS(VSInput _input)
 {
     VSOutput output;
-    output.PosW = mul(World, float4(_input.Position, 1.0f)).xyz;
-    output.PosH = mul(ViewProjection, float4(output.PosW.xyz, 1.0f));
+    output.PosW = mul(cbObject.World, float4(_input.Position, 1.0f)).xyz;
+    output.PosH = mul(cbPass.ViewProjection, float4(output.PosW.xyz, 1.0f));
     output.Texture = _input.Position;
     
     return output;

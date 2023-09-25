@@ -35,5 +35,8 @@
     <ClInclude Include="Scene\RenderEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CBStructures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

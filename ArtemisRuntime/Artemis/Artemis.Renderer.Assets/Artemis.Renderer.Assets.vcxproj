@@ -138,6 +138,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CBStructures.h" />
     <ClInclude Include="Loading\AssimpLoader.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\RenderEntity.h" />

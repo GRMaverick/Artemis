@@ -1,49 +1,33 @@
 #pragma once
 
-#include <DirectXMath.h>
+#if defined(__cplusplus)
+	#include <DirectXMath.h>
+	#include "Vectors/Vector3.h"
+	#include "Vectors/Vector4.h"
 
-#include "Vectors/Vector3.h"
-#include "Vectors/Vector4.h"
+	#define CB_FLOAT4X4 DirectX::XMMATRIX
+	#define CB_FLOAT3 Artemis::Maths::Vector3
+	#define CB_FLOAT4 Artemis::Maths::Vector4
+#else
+	#define CB_FLOAT4X4 float4x4
+	#define CB_FLOAT3 float3
+	#define CB_FLOAT4 float4
+#endif
 
-struct Pass
+struct ConstantBuffer_Pass
 {
-	DirectX::XMMATRIX ViewProjection;
-	Artemis::Maths::Vector3 EyePosition;
+	CB_FLOAT4X4		ViewProjection;
+	CB_FLOAT3		EyePosition;
 };
 
-//struct Light
-//{
-//	Artemis::Maths::Vector4 Diffuse;
-//	Artemis::Maths::Vector4 Ambient;
-//	Artemis::Maths::Vector4 Specular;
-//	Artemis::Maths::Vector3 Position;
-//	float SpecularPower;
-//};
-
-struct DirectionalLight
+struct ConstantBuffer_DLight
 {
-	Artemis::Maths::Vector4 Diffuse;
-	Artemis::Maths::Vector3 Position;
+	CB_FLOAT4 Diffuse;
+	CB_FLOAT3 Position;
 	float Padding;
 };
 
-//struct Spotlight
-//{
-//	Light LightData;
-//	
-//	float Theta;
-//	float Phi;
-//	float Falloff;
-//};
-
-struct Material
+struct ConstantBuffer_Object
 {
-	Artemis::Maths::Vector4 Diffuse = Artemis::Maths::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-	Artemis::Maths::Vector4 Ambient = Artemis::Maths::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	Artemis::Maths::Vector4 Specular = Artemis::Maths::Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-};
-
-struct Object
-{
-	DirectX::XMMATRIX World;
+	CB_FLOAT4X4 World;
 };
