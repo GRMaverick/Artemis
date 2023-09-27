@@ -1,5 +1,12 @@
 #include "C:\\Users\\Maverick\\Documents\\GitHub\\Artemis\\ArtemisRuntime\\Artemis\\Artemis.Renderer.Assets\\CBStructures.h"
 
+#define PIXEL_SHADER_RESOURCE_2D(name, reg) \
+    Texture2D name : register(t##reg); \
+    SamplerState name##Sampler : register(s##reg);
+#define PIXEL_SHADER_RESOURCE_CUBE(name, reg) \
+    TextureCube name : register(t##reg); \
+    SamplerState name##Sampler : register(s##reg);
+
 #define XM_PI 3.141592654f
 
 //
@@ -37,14 +44,6 @@ cbuffer ObjectCB : register(b1)
     ConstantBuffer_Object cbObject;
 };
 
-//struct DirectionalLight
-//{
-//    float4 Diffuse;
-    
-//    float3 Position;
-//    float Padding;
-//};
-
 static const int LightCount = 4;
 cbuffer DirectionalLightCB : register(b2)
 {
@@ -78,17 +77,12 @@ VSOutput MainVS(VSInput _input)
 //
 // Constant Buffers / Resource Bindings
 //
-Texture2D Albedo : register(t0);
-Texture2D Normal : register(t1);
-Texture2D AmbientOcclusion : register(t2);
-Texture2D Metalness : register(t3);
-Texture2D Roughness : register(t4);
-
-SamplerState AlbedoSampler : register(s0);
-SamplerState NormalSampler : register(s1);
-SamplerState AmbientOcclusionSampler : register(s2);
-SamplerState MetalnessSampler : register(s3);
-SamplerState RoughnessSampler : register(s4);
+PIXEL_SHADER_RESOURCE_2D(Albedo, 0);
+PIXEL_SHADER_RESOURCE_2D(Normal, 1);
+PIXEL_SHADER_RESOURCE_2D(AmbientOcclusion, 2);
+PIXEL_SHADER_RESOURCE_2D(Metalness, 3);
+PIXEL_SHADER_RESOURCE_2D(Roughness, 4);
+PIXEL_SHADER_RESOURCE_CUBE(Skybox, 5);
 
 float3 NormalSampleToWorldSpace(float3 normalSample, float3 unitNormalW, float3 tangentW)
 {
@@ -171,14 +165,15 @@ float4 MainPS(VSOutput _input) : SV_TARGET
     f0 = lerp(f0, albedoSample, metalnessSample);
     
     float3 Lo = float3(0.0f, 0.0f, 0.0f);
-    for (int i = 0; i < LightCount; ++i) // TODO: Loop on Lights.
+    //for (int i = 0; i < LightCount; ++i) // TODO: Loop on Lights.
     {
-        float3 lightDirection = normalize(cbDirectionalLightData[i].Position - _input.PosW);
+        float3 lightDirection = reflect(-cbPass.EyePosition, _input.Normal); //normalize(cbDirectionalLightData[i].Position - _input.PosW);
+        float4 reflectColour = Skybox.Sample(SkyboxSampler, lightDirection);
         float3 halfVector = normalize(viewDirection + lightDirection);
         
-        float distance = length(cbDirectionalLightData[i].Position - _input.PosW);
+        float distance = length(lightDirection - _input.PosW);
         float attenuation = 1.0f / (distance * distance);
-        float3 radiance = cbDirectionalLightData[i].Diffuse * attenuation;
+        float3 radiance = reflectColour.xyz; //* attenuation;
         
         float D = NormalDistributionFunction_GGXTR(normal, halfVector, roughnessSample.x);
         float F = Fresnel_FresnelSchlick(normal, halfVector, viewDirection, f0);

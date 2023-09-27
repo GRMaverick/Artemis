@@ -50,11 +50,11 @@
         <MaterialInstance Name="StorageContainer_StandardPBR">
             <Effect Name="StandardPBR" />
             <Textures>
-                <Texture Register="Albedo" Path="StorageContainer\\storage-container2-albedo.png" Dimension="2D" Sampler="AnisotropicWrap"/>
-                <Texture Register="Normal" Path="StorageContainer\\storage-container2-normal-dx.png" Dimension="2D" Sampler="AnisotropicWrap"/>
-                <Texture Register="AmbientOcclusion" Path="StorageContainer\\storage-container2-ao.png" Dimension="2D" Sampler="AnisotropicWrap"/>
-                <Texture Register="Metalness" Path="StorageContainer\\storage-container2-metallic.png" Dimension="2D" Sampler="AnisotropicWrap"/>
-                <Texture Register="Roughness" Path="StorageContainer\\storage-container2-roughness.png" Dimension="2D" Sampler="AnisotropicWrap"/>
+                <Texture Register="Albedo" Path="StorageContainer\\storage-container2-albedo.png" Dimension="2D" Sampler="PointClamp"/>
+                <Texture Register="Normal" Path="StorageContainer\\storage-container2-normal-dx.png" Dimension="2D" Sampler="PointClamp"/>
+                <Texture Register="AmbientOcclusion" Path="StorageContainer\\storage-container2-ao.png" Dimension="2D" Sampler="PointClamp"/>
+                <Texture Register="Metalness" Path="StorageContainer\\storage-container2-metallic.png" Dimension="2D" Sampler="PointClamp"/>
+                <Texture Register="Roughness" Path="StorageContainer\\storage-container2-roughness.png" Dimension="2D" Sampler="PointClamp"/>
             </Textures>
         </MaterialInstance>  
 		<MaterialInstance Name="Cubemap">

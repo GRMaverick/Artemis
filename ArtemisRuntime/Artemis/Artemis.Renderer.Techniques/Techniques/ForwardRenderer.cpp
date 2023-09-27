@@ -419,6 +419,13 @@ namespace Artemis::Renderer::Techniques
 
 		for ( UINT i = 0; i < m_vpRenderEntities.size(); ++i )
 		{
+			{
+				static const float sRotationSpeed = 5.0f * 0.016f;
+				Vector3 rotation = Vector3(m_vpRenderEntities[i]->GetRotation().x, m_vpRenderEntities[i]->GetRotation().y, m_vpRenderEntities[i]->GetRotation().z);
+				rotation += Vector3(1.0f, 1.0f, 0.0f) * sRotationSpeed;
+				m_vpRenderEntities[i]->SetRotation(rotation.x, rotation.y, rotation.z);
+			}
+
 			m_vpRenderEntities[i]->Update();
 
 			ConstantBuffer_Object obj;
@@ -511,11 +518,14 @@ namespace Artemis::Renderer::Techniques
             Artemis::Renderer::Helpers::RenderMarker profile(_pGfxCmdList, "%s", pModel->GetModelName());
 
             Interfaces::IGpuResource* pModelCb = pModel->GetConstantBuffer();
+            Artemis::Renderer::Interfaces::IMaterial* pModelMat = m_mapMaterials.at(pModel->GetMaterialName());
+			m_pDevice->SetMaterial(pModelMat);
 
-            Artemis::Renderer::Interfaces::IMaterial* mat = m_mapMaterials.at(pModel->GetMaterialName());
+			Artemis::Renderer::Interfaces::IMaterial* pSkyboxMat = m_mapMaterials.at(m_pSkybox->GetMaterialName());
+			m_pDevice->SetTexture("Skybox", pSkyboxMat->m_mapTextures["Skybox"]);
+			m_pDevice->SetSamplerState("Skybox", Tables::SamplerTable::Instance()->GetSamplerState(pSkyboxMat->m_mapSamplers["Skybox"].c_str()));
 
-            m_pDevice->SetMaterial(mat);
-			for (auto iter = mat->m_mapSamplers.begin(); iter != mat->m_mapSamplers.end(); ++iter)
+			for (auto iter = pModelMat->m_mapSamplers.begin(); iter != pModelMat->m_mapSamplers.end(); ++iter)
 			{
 				m_pDevice->SetSamplerState(iter->first.c_str(), Tables::SamplerTable::Instance()->GetSamplerState(iter->second.c_str()));
 			}
@@ -588,7 +598,7 @@ namespace Artemis::Renderer::Techniques
 
 		ImGUIEngine::Begin();
 
-		//ImGui_MainCamera();
+		ImGui_MainCamera();
 		ImGui_Memory();
 		ImGui_Lights();
 		//ImGui_Objects();

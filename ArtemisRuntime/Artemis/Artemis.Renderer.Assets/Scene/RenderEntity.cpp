@@ -144,15 +144,14 @@ namespace Artemis::Renderer::Assets
 
     void RenderEntity::Update()
     {
-        float sRotationSpeed = 10.0f * 0.016f;
-        //m_RotationTheta += sRotationSpeed;
-
         // Update the model matrix. 
-        float          angle = 25.0f;
-        const XMVECTOR rotation = XMVectorSet(1, 0, 0, 0);
+        const XMVECTOR rotation = XMVectorSet(1, 1, 1, 0);
 
         const XMMATRIX s = XMMatrixScaling(m_fScale, m_fScale, m_fScale);
-        const XMMATRIX r = XMMatrixRotationAxis(rotation, XMConvertToRadians(m_RotationTheta));
+        const XMMATRIX r = XMMatrixRotationAxis(rotation, XMConvertToRadians(GetRotation().x)) * 
+            XMMatrixRotationAxis(rotation, XMConvertToRadians(GetRotation().y)) * 
+            XMMatrixRotationAxis(rotation, XMConvertToRadians(GetRotation().z));
+
         const XMMATRIX t = XMMatrixTranslation(m_xm3Position.x, m_xm3Position.y, m_xm3Position.z);
         m_matWorld = s * r * t;
     }
