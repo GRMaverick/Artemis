@@ -90,7 +90,7 @@ namespace Artemis::Renderer::Device::Dx12
         IAGpuResource* CreateWicTexture2D(const wchar_t* _pWstrFilename, IACommandList* _pCommandList, const wchar_t* _pDebugName = L"") const override;
         IAGpuResource* CreateTextureCube(const wchar_t* _pWstrFilename, IACommandList* _pCommandList, const wchar_t* _pDebugName = L"") const override;
         IAGpuResource* CreateWicTextureCube(const wchar_t* _pWstrFilename, IACommandList* _pCommandList, const wchar_t* _pDebugName = L"") const override;
-
+		Interfaces::ISamplerState* CreateSamplerState(const Interfaces::SamplerStateFilter& _eFilter, const Interfaces::SamplerStateWrapMode& _eWrap, const Interfaces::SamplerStateComparisonFunction& _eCompFunc, const wchar_t* _pDebugName = L"") override;
 
 		bool FlushState() override;
 		bool SetMaterial( Interfaces::IMaterial* _pMaterial ) override;
@@ -123,7 +123,6 @@ namespace Artemis::Renderer::Device::Dx12
 		//DeviceState GetDeviceState( void ) const { return m_DeviceState; }
 		bool GetRootSignature( Interfaces::IShaderStage* _pShader, ID3D12RootSignature** _ppRootSignature, const wchar_t* _pDebugName = L"" );
 		bool GetPipelineState( ID3D12PipelineState** _ppPipelineState, const wchar_t* _pDebugName = L"" );
-		bool CreateSamplerState( const D3D12_SAMPLER_DESC* _pSamplerDesc, D3D12_CPU_DESCRIPTOR_HANDLE _cpuHandle, const wchar_t* _pDebugName = L"" ) const;
 
 		Interfaces::IDescriptorHeap* GetSrvCbvHeap( void ) const { return m_pDescHeapSrvCbv; }
 
@@ -141,7 +140,6 @@ namespace Artemis::Renderer::Device::Dx12
 		Interfaces::IDescriptorHeap* m_pActiveSamplerHeap;
 
 		Interfaces::ISamplerState* m_pDefaultSampler;
-		D3D12_SAMPLER_DESC         m_eDefaultSampler;
 
 		Interfaces::ICommandList* m_pImmediateContext;
 

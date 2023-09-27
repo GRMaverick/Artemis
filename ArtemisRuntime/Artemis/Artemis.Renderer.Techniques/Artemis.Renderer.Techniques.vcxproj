@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="Debug\ImGUIEngine.cpp" />
     <ClCompile Include="Factory\RendererFactory.cpp" />
+    <ClCompile Include="Tables\SamplerTable.cpp" />
     <ClCompile Include="Techniques\ForwardRenderer.cpp">
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ShowIncludes>
     </ClCompile>
@@ -140,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="Debug\ImGUIEngine.h" />
     <ClInclude Include="Factory\RendererFactory.h" />
+    <ClInclude Include="Tables\SamplerTable.h" />
     <ClInclude Include="Techniques\ForwardRenderer.h" />
   </ItemGroup>
   <ItemGroup>

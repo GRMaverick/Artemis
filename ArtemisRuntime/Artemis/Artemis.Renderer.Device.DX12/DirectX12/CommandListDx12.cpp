@@ -2,6 +2,8 @@
 
 #include "CommandListDx12.h"
 
+#include "DeviceDx12.h"
+
 #include "VertexBufferResourceDx12.h"
 #include "IndexBufferResourceDx12.h"
 

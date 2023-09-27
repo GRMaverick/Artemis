@@ -6,6 +6,7 @@
 
 #include "Vectors/Vector3.h"
 
+//#include "Interfaces/ISamplerState.h"
 #include "Interfaces/IGraphicsDevice.h"
 
 using namespace DirectX;

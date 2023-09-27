@@ -24,6 +24,9 @@
     <ClCompile Include="Debug\ImGUIEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tables\SamplerTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Techniques\ForwardRenderer.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Debug\ImGUIEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tables\SamplerTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -118,7 +118,6 @@ namespace Artemis::Renderer::Device::Dx12
 		m_pActiveResourceHeap( nullptr ),
 		m_pActiveSamplerHeap( nullptr ),
 		m_pDefaultSampler( nullptr ),
-		m_eDefaultSampler(),
 		m_pImmediateContext( nullptr )
 	{
 		m_pDevice      = nullptr;
@@ -238,12 +237,16 @@ namespace Artemis::Renderer::Device::Dx12
 		if ( !CreateDescriptorHeap( DescriptorHeapType_CbvSrvUav, &m_pDescHeapSrvCbv, DescriptorHeapFlags_None, kMaxSrvCbvs, L"MainSrvCbvHeap" ) )
 			return false;
 
-		constexpr unsigned int kMaxSamplerDescs = 1;
+		constexpr unsigned int kMaxSamplerDescs = 10;
 		if ( !CreateDescriptorHeap( DescriptorHeapType_Sampler, &m_pDescHeapSampler, DescriptorHeapFlags_None, kMaxSamplerDescs ) )
 			return false;
 
 		// Default Sampler
-		m_pDefaultSampler = CreateSamplerState( Renderer::Interfaces::SamplerStateFilter::ELinear, Renderer::Interfaces::SamplerStateWrapMode::EWrap, Renderer::Interfaces::SamplerStateComparisonFunction::EAlways );
+		m_pDefaultSampler = CreateSamplerState( 
+			Renderer::Interfaces::SamplerStateFilter::ELinear, 
+			Renderer::Interfaces::SamplerStateWrapMode::EWrap, 
+			Renderer::Interfaces::SamplerStateComparisonFunction::EAlways 
+		);
 
 		m_pImmediateContext = new CommandListDx12();
 		if ( !CreateCommandList( CommandListType_Direct, &m_pImmediateContext, L"ImmediateContext" ) )
@@ -308,7 +311,7 @@ namespace Artemis::Renderer::Device::Dx12
 		return true;
 	}
 
-	Renderer::Interfaces::ISamplerState* DeviceDx12::CreateSamplerState( const Renderer::Interfaces::SamplerStateFilter _eFilter, const Renderer::Interfaces::SamplerStateWrapMode _eWrap, const Renderer::Interfaces::SamplerStateComparisonFunction _eCompFunc ) const
+	ISamplerState* DeviceDx12::CreateSamplerState(const Interfaces::SamplerStateFilter& _eFilter, const Interfaces::SamplerStateWrapMode& _eWrap, const Interfaces::SamplerStateComparisonFunction& _eCompFunc, const wchar_t* _pDebugName)
 	{
 		SamplerStateDx12* pSamplerState = new SamplerStateDx12();
 		if ( !pSamplerState->Initialise( this, m_pDescHeapSampler, _eFilter, _eWrap, _eCompFunc ) )
@@ -319,7 +322,6 @@ namespace Artemis::Renderer::Device::Dx12
 		return pSamplerState;
 	}
 
-#pragma region
 	IGpuResource* DeviceDx12::CreateTexture2D( const wchar_t* _pWstrFilename, IACommandList* _pCommandList, const wchar_t* _pDebugName ) const
 	{
 		return new Texture2DResourceDx12( _pWstrFilename, true, this, _pCommandList, m_pDescHeapSrvCbv, _pDebugName );
@@ -479,12 +481,6 @@ namespace Artemis::Renderer::Device::Dx12
 			(*_ppPipelineState) = pPso;
 		}
 
-		return true;
-	}
-
-	bool DeviceDx12::CreateSamplerState( const D3D12_SAMPLER_DESC* _pSamplerDesc, const D3D12_CPU_DESCRIPTOR_HANDLE _cpuHandle, const wchar_t* _pDebugName ) const
-	{
-		m_pDevice->CreateSampler( _pSamplerDesc, _cpuHandle );
 		return true;
 	}
 

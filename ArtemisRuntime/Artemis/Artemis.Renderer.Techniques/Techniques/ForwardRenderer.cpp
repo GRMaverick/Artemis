@@ -32,6 +32,8 @@
 #include "Cache/ShaderCache.h"
 #include "Constants/ConstantTable.h"
 
+#include "Tables/SamplerTable.h"
+
 #include "Debug/ImGUIEngine.h"
 #include "Helpers/ProfileMarker.h"
 #include <filesystem>
@@ -136,6 +138,13 @@ namespace Artemis::Renderer::Techniques
 
 		if ( !m_pDevice->CreateDescriptorHeap( Interfaces::DescriptorHeapType_CbvSrvUav, &m_pImGuiSrvHeap, Interfaces::DescriptorHeapFlags_ShaderVisible, 1, L"ImGUI SRV" ) )
 			return false;
+
+		Tables::SamplerTable::Instance()->CreateSamplerState("PointWrap", SamplerStateFilter::EPoint, SamplerStateWrapMode::EWrap, SamplerStateComparisonFunction::EAlways, m_pDevice);
+		Tables::SamplerTable::Instance()->CreateSamplerState("PointClamp", SamplerStateFilter::EPoint, SamplerStateWrapMode::EClamp, SamplerStateComparisonFunction::EAlways, m_pDevice);
+		Tables::SamplerTable::Instance()->CreateSamplerState("LinearWrap", SamplerStateFilter::ELinear, SamplerStateWrapMode::EWrap, SamplerStateComparisonFunction::EAlways, m_pDevice);
+		Tables::SamplerTable::Instance()->CreateSamplerState("LinearClamp", SamplerStateFilter::ELinear, SamplerStateWrapMode::EClamp, SamplerStateComparisonFunction::EAlways, m_pDevice);
+		Tables::SamplerTable::Instance()->CreateSamplerState("AnisotropicWrap", SamplerStateFilter::EAnisotropic, SamplerStateWrapMode::EWrap, SamplerStateComparisonFunction::EAlways, m_pDevice);
+		Tables::SamplerTable::Instance()->CreateSamplerState("AnisotropicClamp", SamplerStateFilter::EAnisotropic, SamplerStateWrapMode::EClamp, SamplerStateComparisonFunction::EAlways, m_pDevice);
 
 		ImGUIEngine::Initialise( _pWindow, m_pDevice, m_pImGuiSrvHeap );
 
@@ -287,7 +296,24 @@ namespace Artemis::Renderer::Techniques
                         }
 					}
 
-					mat->m_mapTextures.emplace(std::string(texture->first_attribute("Register")->value()), pTexture);
+					std::string texReg = std::string(texture->first_attribute("Register")->value());
+					mat->m_mapTextures.emplace(texReg, pTexture);
+
+					auto samplerAttr = texture->first_attribute("Sampler");
+					if (samplerAttr)
+					{
+						std::string sampler = std::string(samplerAttr->value());
+						if (sampler.empty())
+						{
+							sampler = "PointWrap";
+						}
+						mat->m_mapSamplers.emplace(texReg, sampler);
+					}
+					else
+					{
+						mat->m_mapSamplers.emplace(texReg, "PointWrap");
+					}
+
 					texture = texture->next_sibling("Texture");
 				}
 
@@ -453,6 +479,7 @@ namespace Artemis::Renderer::Techniques
 			m_pSwapChain->PrepareForPresentation( pGfxCmdList );
 			m_pGfxCmdQueue->SubmitToQueue( pGfxCmdList );
 			m_pGfxCmdQueue->ExecuteCommandLists();
+
 			bool bRet = m_pSwapChain->Present();
 			m_pGfxCmdQueue->Signal();
 			m_pSwapChain->Swap();
@@ -488,11 +515,10 @@ namespace Artemis::Renderer::Techniques
             Artemis::Renderer::Interfaces::IMaterial* mat = m_mapMaterials.at(pModel->GetMaterialName());
 
             m_pDevice->SetMaterial(mat);
-            m_pDevice->SetSamplerState("Albedo", m_pDevice->GetDefaultSamplerState());
-            m_pDevice->SetSamplerState("Normal", m_pDevice->GetDefaultSamplerState());
-            m_pDevice->SetSamplerState("AmbientOcclusion", m_pDevice->GetDefaultSamplerState());
-            m_pDevice->SetSamplerState("Metalness", m_pDevice->GetDefaultSamplerState());
-            m_pDevice->SetSamplerState("Roughness", m_pDevice->GetDefaultSamplerState());
+			for (auto iter = mat->m_mapSamplers.begin(); iter != mat->m_mapSamplers.end(); ++iter)
+			{
+				m_pDevice->SetSamplerState(iter->first.c_str(), Tables::SamplerTable::Instance()->GetSamplerState(iter->second.c_str()));
+			}
 
             m_pDevice->SetConstantBuffer("ObjectCB", pModelCb);
             m_pDevice->SetConstantBuffer("PassCB", m_pMainPassCb);

@@ -1,4 +1,5 @@
 #pragma once
+#include "ISamplerState.h"
 #include "IDescriptorHeap.h"
 #include "IConstantBufferParameters.h"
 
@@ -12,7 +13,6 @@ namespace Artemis::Renderer::Interfaces
 	class IGpuResource;
 	class ISwapChain;
 	class ICommandQueue;
-	class ISamplerState;
 	class ICommandList;
 	struct IMaterial;
 
@@ -360,7 +360,8 @@ namespace Artemis::Renderer::Interfaces
 		virtual IGpuResource* CreateConstantBufferResource( const IConstantBufferParameters::ConstantBuffer& _params, const wchar_t* _pDebugName = L"" ) const = 0;
 		virtual IGpuResource* CreateRenderTargetResource( const Interfaces::IGraphicsDevice* _pDevice, const Interfaces::ICommandList* _pCmdList, const unsigned _width, const unsigned _height, const Interfaces::DxgiFormat _format, Interfaces::IDescriptorHeap* _pRtvHeap, Interfaces::IDescriptorHeap* _pSrvHeap ) const = 0;
 		virtual IGpuResource* CreateDepthBufferResource( const Interfaces::IGraphicsDevice* _pDevice, const Interfaces::ICommandList* _pCmdList, const unsigned _width, const unsigned _height, const Interfaces::DxgiFormat _format, Interfaces::IDescriptorHeap* _pDsvHeap, Interfaces::IDescriptorHeap* _pSrvHeap ) const = 0;
-        
+		virtual ISamplerState* CreateSamplerState(const Interfaces::SamplerStateFilter& _eFilter, const Interfaces::SamplerStateWrapMode& _eWrap, const Interfaces::SamplerStateComparisonFunction& _eCompFunc, const wchar_t* _pDebugName = L"") = 0;
+		
 		virtual IGpuResource* CreateTexture2D(const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"") const = 0;
         virtual IGpuResource* CreateWicTexture2D(const wchar_t* _pWstrFilename, ICommandList* _pCommandList, const wchar_t* _pDebugName = L"") const = 0;
 

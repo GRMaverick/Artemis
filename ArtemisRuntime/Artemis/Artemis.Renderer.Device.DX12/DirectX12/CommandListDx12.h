@@ -7,8 +7,7 @@
 #include "Helpers/d3dx12.h"
 
 #include "Interfaces/ICommandList.h"
-
-#include "DeviceDx12.h"
+#include "Interfaces/IGraphicsDevice.h"
 
 //#define BREADCRUMB
 

@@ -10,6 +10,7 @@ namespace Artemis::Renderer::Interfaces
     {
         IEffect* Effect;
 
+        std::map<std::string, std::string> m_mapSamplers;
         std::map<std::string, Artemis::Renderer::Interfaces::IGpuResource*> m_mapTextures;
     };
 }
